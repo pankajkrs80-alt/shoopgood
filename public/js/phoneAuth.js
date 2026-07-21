@@ -1,3 +1,4 @@
+import { createUserIfNotExists } from "./firestore.js";
 import { app } from "./firebase.js";
 
 import {
@@ -46,9 +47,12 @@ document.getElementById("verifyOtp").addEventListener("click", async () => {
 
         const result = await confirmationResult.confirm(otp);
 
-        alert("Welcome " + result.user.phoneNumber);
+// Create customer document if it doesn't exist
+await createUserIfNotExists(result.user);
 
-        window.location.href = "index.html";
+alert("Welcome " + result.user.phoneNumber);
+
+window.location.href = "index.html";
 
     } catch (error) {
 
