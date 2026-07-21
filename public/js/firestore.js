@@ -4,10 +4,11 @@ import {
     getFirestore,
     doc,
     getDoc,
+    getDocs,
     setDoc,
+    collection,
     serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
+ } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 const db = getFirestore(app);
 
 export async function createUserIfNotExists(user) {
@@ -43,4 +44,13 @@ export async function createUserIfNotExists(user) {
         console.log("Customer already exists");
 
     }
+}
+export async function hasAddress(uid) {
+
+    const snapshot = await getDocs(
+        collection(db, "customers", uid, "addresses")
+    );
+
+    return !snapshot.empty;
+
 }
