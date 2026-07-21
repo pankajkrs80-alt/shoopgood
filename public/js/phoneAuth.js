@@ -56,8 +56,11 @@ window.location.href = "index.html";
 
     } catch (error) {
 
-        alert("Invalid OTP");
+    console.error(error);
 
+    alert(error.message);
+
+}
     }
 
-});
+);
