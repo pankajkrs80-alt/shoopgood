@@ -1,26 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<title>Login</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ShopGood</title>
 </head>
-
 <body>
 
-<h1>Login</h1>
+<h2>Login with Mobile Number</h2>
 
-<button id="login">
+<input
+    type="tel"
+    id="phone"
+    placeholder="+919999999999"
+>
 
-Sign in with Google
+<br><br>
 
+<button id="sendOtp">
+    Send OTP
 </button>
 
-<script type="module" src="js/login.js"></script>
+<br><br>
+
+<input
+    type="text"
+    id="otp"
+    placeholder="Enter OTP"
+>
+
+<br><br>
+
+<button id="verifyOtp">
+    Verify OTP
+</button>
+
+<div id="recaptcha-container"></div>
+
+<script type="module" src="js/phoneAuth.js"></script>
 
 </body>
-
 </html>
