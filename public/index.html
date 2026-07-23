@@ -1,51 +1,76 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
-
-<title>ShopGood</title>
-
-<link rel="stylesheet" href="css/style.css">
-
-<link rel="stylesheet" href="css/modal.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Custom Product</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDKs (Using Compat libraries for easy vanilla JS integration) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-
 <body>
 
-<header>
+    <!-- SECTION 1: Product Page -->
+    <main id="product-section" class="container">
+        <div class="image-gallery">
+            <!-- Replace src with your actual image URLs -->
+            <img src="https://via.placeholder.com/400x400" alt="Product Image 1" class="main-image">
+            <div class="thumbnails">
+                <img src="https://via.placeholder.com/100x100" alt="Thumb 1">
+                <img src="https://via.placeholder.com/100x100" alt="Thumb 2">
+            </div>
+        </div>
+        
+        <div class="product-info">
+            <h1>Your Custom Product Title</h1>
+            <div class="reviews">⭐⭐⭐⭐⭐ (24 Reviews)</div>
+            <p class="description">
+                Detailed description of your amazing product goes here. Explain why they need it and what makes it customizable.
+            </p>
+            <h2 class="price">$49.99</h2>
+            <button id="buy-now-btn" class="primary-btn">Buy Now</button>
+        </div>
+    </main>
 
-<h1>SHOPGOOD</h1>
+    <!-- SECTION 2: OTP Login (Hidden by default) -->
+    <section id="login-section" class="container hidden">
+        <div class="card">
+            <h2>Login to Continue</h2>
+            <p>Please enter your mobile number to receive an OTP.</p>
+            
+            <div id="recaptcha-container"></div>
+            
+            <div id="phone-input-group">
+                <input type="tel" id="phone-number" placeholder="+1 234 567 8900" required>
+                <button id="send-otp-btn" class="primary-btn">Send OTP</button>
+            </div>
 
-</header>
+            <div id="otp-input-group" class="hidden">
+                <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" required>
+                <button id="verify-otp-btn" class="primary-btn">Verify & Checkout</button>
+            </div>
+        </div>
+    </section>
 
-<main id="app">
+    <!-- SECTION 3: Address Form (Hidden by default) -->
+    <section id="address-section" class="container hidden">
+        <div class="card">
+            <h2>Shipping Details</h2>
+            <form id="checkout-form">
+                <input type="text" id="fullName" placeholder="Full Name" required>
+                <input type="text" id="streetAddress" placeholder="Street Address" required>
+                <div class="row">
+                    <input type="text" id="city" placeholder="City" required>
+                    <input type="text" id="zipCode" placeholder="Zip/Postal Code" required>
+                </div>
+                <button type="submit" class="primary-btn">Complete Order</button>
+            </form>
+        </div>
+    </section>
 
-<h2>Premium Brass Name Plates</h2>
-
-<p>
-
-Beautiful custom laser engraved products.
-
-</p>
-
-<button id="buyBtn">
-
-Buy Now
-
-</button>
-
-</main>
-
-<div id="modalContainer"></div>
-
-<script type="module" src="js/app.js"></script>
-
+    <script src="app.js"></script>
 </body>
-
 </html>
