@@ -154,6 +154,7 @@ document.getElementById('checkout-form').addEventListener('submit', (e) => {
             try {
                 await db.collection('orders').add(orderData);
                 
+                
                 await db.collection('users').doc(currentUser.uid).set({
                     fullName: fullName,
                     streetAddress: streetAddress,
