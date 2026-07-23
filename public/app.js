@@ -69,9 +69,22 @@ document.getElementById('send-otp-btn').addEventListener('click', () => {
 document.getElementById('verify-otp-btn').addEventListener('click', () => {
     const code = document.getElementById('otp-code').value;
     
-    confirmationResult.confirm(code).then((result) => {
-        // User signed in successfully.
+    confirmationResult.confirm(code).then(async (result) => {
+        // User signed in successfully
         currentUser = result.user;
+        
+        // --- NEW CODE: Save user to Firestore Database ---
+        try {
+            await db.collection('users').doc(currentUser.uid).set({
+                phoneNumber: currentUser.phoneNumber,
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                // You can add more default fields here if needed
+            }, { merge: true }); // merge: true prevents overwriting existing data
+        } catch (error) {
+            console.error("Error saving user data: ", error);
+        }
+        // -------------------------------------------------
+
         loginSection.classList.add('hidden');
         addressSection.classList.remove('hidden');
     }).catch((error) => {
