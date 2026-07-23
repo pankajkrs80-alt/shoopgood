@@ -10,9 +10,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- Add this below your Firebase scripts in index.html -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-
+<!-- Top Navigation Bar -->
+    <!-- Top Navigation Bar -->
+    <header style="width: 100%; max-width: 800px; display: flex; justify-content: flex-end; margin-bottom: -20px; z-index: 10;">
+        <button id="my-account-btn" class="hidden" style="background: none; border: 1px solid var(--primary-color); padding: 8px 16px; border-radius: var(--border-radius); cursor: pointer; font-weight: bold;">My Account</button>
+    </header>
     <!-- SECTION 1: Product Page -->
     <main id="product-section" class="container">
         <div class="image-gallery">
@@ -55,7 +61,7 @@
         </div>
     </section>
 
-    <!-- SECTION 3: Address Form (Hidden by default) -->
+ <!-- SECTION 3: Address Form (Hidden by default) -->
     <section id="address-section" class="container hidden">
         <div class="card">
             <h2>Shipping Details</h2>
@@ -71,6 +77,29 @@
         </div>
     </section>
 
+    <!-- SECTION 4: Customer Dashboard (Hidden by default) -->
+    <section id="account-section" class="container hidden">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
+                <h2>My Account</h2>
+                <button id="logout-btn" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Logout</button>
+            </div>
+            
+            <h3>Profile Details</h3>
+            <div id="profile-details" style="background: var(--bg-color); padding: 15px; border-radius: var(--border-radius); margin-bottom: 30px;">
+                <!-- Profile details will inject here -->
+            </div>
+
+            <h3>My Orders</h3>
+            <div id="orders-list">
+                <!-- Orders will inject here -->
+            </div>
+            
+            <button id="back-to-shop-btn" class="primary-btn" style="margin-top: 20px;">Back to Shop</button>
+        </div>
+    </section>
+
+    <!-- THE SCRIPT TAG MUST BE DOWN HERE -->
     <script src="app.js"></script>
 </body>
 </html>

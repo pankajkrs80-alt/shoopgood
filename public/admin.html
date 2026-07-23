@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <style>
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: var(--primary-color); color: white; }
+        .admin-container { max-width: 1000px; margin: 40px auto; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Control Panel - Orders</h2>
+            <button id="admin-logout-btn" class="hidden" style="background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Logout</button>
+        </div>
+
+        <!-- Admin Login Form -->
+        <!-- Admin Login Form (Google Sign-In) -->
+        <div id="admin-login-section" class="card" style="max-width: 400px; margin: 50px auto; text-align: center;">
+            <h3>Admin Login</h3>
+            <p style="margin-bottom: 20px;">Click below to securely access your dashboard.</p>
+            <button id="admin-login-btn" class="primary-btn" style="background-color: #4285F4;">Sign in with Google</button>
+            <p id="login-error" style="color: red; margin-top: 10px; display: none;"></p>
+        </div>
+<!-- Affiliate Leaderboard -->
+        <div class="card" style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ddd;">
+            <h3 style="margin-top: 0;">Affiliate Leaderboard</h3>
+            <div id="affiliate-stats">
+                <p>Loading stats...</p>
+            </div>
+        </div>
+        <!-- The Orders Table -->
+        <div id="admin-content" class="hidden">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Affiliate Tag</th>
+                        <th>Payment ID</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-table-body">
+                    <!-- Orders will be injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

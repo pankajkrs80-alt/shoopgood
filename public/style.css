@@ -12,7 +12,8 @@ body {
     margin: 0;
     padding: 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* THIS STACKS ITEMS VERTICALLY */
+    align-items: center;    /* THIS CENTERS THEM HORIZONTALLY */
 }
 
 .container {
@@ -109,3 +110,24 @@ input, textarea {
 
 /* Utility Classes */
 .hidden { display: none !important; }
+/* Order History Cards */
+.order-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    background: #fff;
+}
+.order-card p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    background: #10b981;
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
