@@ -56,28 +56,34 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
-// 6. Fetch All Orders
+// 6. Fetch All Orders & Calculate Affiliate Stats
 async function fetchOrders() {
-    tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Loading orders...</td></tr>";
+    // Notice colspan is now 7 to match our new column count
+    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>Loading orders...</td></tr>";
     
     try {
         const snapshot = await db.collection('orders').orderBy('createdAt', 'desc').get();
         
         if (snapshot.empty) {
-            tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No orders found.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No orders found.</td></tr>";
             document.getElementById('affiliate-stats').innerHTML = "<p>No sales yet.</p>";
             return;
         }
 
         let tableHtml = "";
-        let affiliateCounts = {}; // Object to hold our tallies
+        let affiliateCounts = {}; 
         
         snapshot.forEach(doc => {
             const order = doc.data();
             const dateOptions = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' };
             const orderDate = order.createdAt ? order.createdAt.toDate().toLocaleDateString(undefined, dateOptions) : 'N/A';
             
-            // Build the table rows
+            // --- THIS GRABS THE URL YOU FOUND AND MAKES A BUTTON ---
+            const imageLink = order.customImageUrl 
+                ? `<a href="${order.customImageUrl}" target="_blank" style="color: #4285F4; font-weight: bold; text-decoration: none;">🖼️ View Photo</a>` 
+                : `<span style="color: #999;">No Image</span>`;
+            
+            // Build the table rows (Now includes the 7th column for the image)
             tableHtml += `
                 <tr>
                     <td>${orderDate}</td>
@@ -86,10 +92,11 @@ async function fetchOrders() {
                     <td>${order.streetAddress || ''}, ${order.city || ''} ${order.zipCode || ''}</td>
                     <td><span style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">${order.affiliateCode || 'none'}</span></td>
                     <td><small>${order.paymentId || 'Pending'}</small></td>
+                    <td>${imageLink}</td> <!-- New image column -->
                 </tr>
             `;
 
-            // Tally up successful affiliate sales (ignore 'none' or unpaid orders)
+            // Tally up successful affiliate sales
             if (order.status === 'paid' && order.affiliateCode && order.affiliateCode !== 'none') {
                 affiliateCounts[order.affiliateCode] = (affiliateCounts[order.affiliateCode] || 0) + 1;
             }
@@ -109,7 +116,7 @@ async function fetchOrders() {
         
     } catch (error) {
         console.error("Error fetching orders: ", error);
-        tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center; color:red;'>Error loading data. Check console.</td></tr>";
+        tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:red;'>Error loading data. Check console.</td></tr>";
     }
 }
 // 7. Logout Logic

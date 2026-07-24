@@ -1,133 +1,202 @@
+/* =========================================
+   1. GLOBAL VARIABLES & BASE STYLES
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
 :root {
-    --primary-color: #000000;
-    --bg-color: #f8f9fa;
-    --text-color: #333333;
+    --primary-color: #0f172a;      /* Deep Slate/Navy */
+    --primary-hover: #1e293b;
+    --accent-color: #10b981;       /* Emerald Green */
+    --accent-hover: #059669;
+    --bg-color: #f8fafc;
+    --text-main: #334155;
+    --text-muted: #64748b;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
     --border-radius: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    flex-direction: column; /* THIS STACKS ITEMS VERTICALLY */
-    align-items: center;    /* THIS CENTERS THEM HORIZONTALLY */
+    color: var(--text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
+/* =========================================
+   2. LAYOUT & UTILITIES
+   ========================================= */
 .container {
-    max-width: 800px;
-    width: 100%;
-    margin-top: 40px;
-}
-
-/* Product Section Layout */
-#product-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
-    background: white;
-    padding: 30px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-}
-
-.image-gallery {
-    flex: 1;
-    min-width: 300px;
-}
-
-.main-image {
-    width: 100%;
-    border-radius: var(--border-radius);
-    object-fit: cover;
-}
-
-.thumbnails {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.thumbnails img {
-    width: 80px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-}
-
-.product-info {
-    flex: 1;
-    min-width: 300px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-h1 { margin-top: 0; }
-.price { font-size: 24px; color: var(--primary-color); }
-.reviews { color: #f59e0b; margin-bottom: 15px; }
-
-/* Forms & Cards */
-.card {
-    background: white;
-    padding: 30px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    max-width: 500px;
+    width: 90%;
+    max-width: 900px;
     margin: 0 auto;
+    padding: 20px 0;
 }
 
-input, textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: var(--border-radius);
-    box-sizing: border-box;
-    font-size: 16px;
+/* The magic class that hides sections smoothly */
+.hidden {
+    display: none !important;
 }
 
+/* Flexbox row for Side-by-Side inputs (like City & Zip) */
 .row {
     display: flex;
     gap: 15px;
 }
-
-.primary-btn {
-    width: 100%;
-    padding: 15px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: opacity 0.2s;
+.row input {
+    flex: 1;
 }
 
-.primary-btn:hover { opacity: 0.8; }
-
-/* Utility Classes */
-.hidden { display: none !important; }
-/* Order History Cards */
-.order-card {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: var(--border-radius);
-    margin-bottom: 15px;
-    background: #fff;
-}
-.order-card p {
-    margin: 5px 0;
-    font-size: 14px;
-}
-.status-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    background: #10b981;
-    color: white;
+/* =========================================
+   3. CARDS & CONTAINERS
+   ========================================= */
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    margin: 20px auto;
+}
+
+.product-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* =========================================
+   4. BUTTONS
+   ========================================= */
+.primary-btn {
+    display: block;
+    width: 100%;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+/* A specific green button for completing payments */
+button[type="submit"] {
+    background-color: var(--accent-color);
+    margin-top: 10px;
+}
+button[type="submit"]:hover {
+    background-color: var(--accent-hover);
+}
+
+/* =========================================
+   5. INPUTS & FORMS
+   ========================================= */
+input[type="text"],
+input[type="tel"],
+input[type="file"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.1);
+}
+
+/* File Upload Button Styling */
+input[type="file"] {
+    background: #f8fafc;
+    padding: 10px;
+    cursor: pointer;
+}
+
+input::file-selector-button {
+    background: var(--border-color);
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    color: var(--text-main);
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 15px;
+    transition: background 0.2s ease;
+}
+
+input::file-selector-button:hover {
+    background: #cbd5e1;
+}
+
+/* =========================================
+   6. CUSTOMER DASHBOARD SPECIFICS
+   ========================================= */
+.order-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.status-badge {
+    background: #d1fae5;
+    color: var(--accent-hover);
+    padding: 4px 10px;
+    border-radius: 20px;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* =========================================
+   7. MOBILE RESPONSIVENESS
+   ========================================= */
+@media (max-width: 600px) {
+    .row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    header {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    h1 {
+        font-size: 2em !important;
+    }
 }

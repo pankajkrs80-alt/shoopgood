@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Photo Necklace | ShopGood</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        /* Product Page Specific Styling Enhancements */
+        .product-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-top: 20px;
+        }
+        .image-gallery .main-image {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        .thumbnails {
+            display: flex;
+            gap: 15px;
+        }
+        .thumbnails img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        .thumbnails img:hover {
+            border-color: #0f172a;
+        }
+        .product-info h1 {
+            font-size: 2.2em;
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+        .reviews {
+            color: #f59e0b;
+            font-size: 15px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        .description {
+            color: #64748b;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .price {
+            font-size: 2em;
+            color: #10b981;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+        @media (max-width: 768px) {
+            .product-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body style="background-color: #f8fafc;">
+
+    <!-- Navigation -->
+    <header style="width: 100%; max-width: 1000px; margin: 0 auto; display: flex; justify-content: flex-start; padding: 20px 0;">
+        <a href="index.html" style="text-decoration: none; color: #0f172a; font-weight: 600; font-size: 16px;">← Back to Shop</a>
+    </header>
+
+    <!-- SECTION 1: Product Customization -->
+    <main id="product-section" class="container" style="max-width: 1000px; width: 100%;">
+        <div class="product-container">
+            
+            <!-- Left: Image Gallery -->
+            <div class="image-gallery">
+                <img src="images/Hero.jpg" alt="Customizable Necklace" class="main-image" id="active-preview">
+                <div class="thumbnails">
+                    <img src="images/Hero.jpg" alt="Thumb Main" onclick="document.getElementById('active-preview').src=this.src">
+                    <img src="images/Hero2 (1).jpg" alt="Thumb 1" onclick="document.getElementById('active-preview').src=this.src">
+                    <img src="images/Lifestyle.jpg" alt="Thumb 2" onclick="document.getElementById('active-preview').src=this.src">
+                </div>
+            </div>
+            
+            <!-- Right: Product Info & Upload Form -->
+            <div class="product-info">
+                <h1>Custom Photo Necklace</h1>
+                <div class="reviews">⭐⭐⭐⭐⭐ <span style="color: #64748b; font-weight: normal;">(48 Verified Reviews)</span></div>
+                <p class="description">
+                    Keep your loved ones close to your heart. Upload your favorite photo, and our master jewelers will custom engrave it directly into this premium pendant.
+                </p>
+                
+                <h2 class="price">₹499.00</h2>
+                
+                <!-- Image Upload Box -->
+                <div style="background: #f1f5f9; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 2px dashed #cbd5e1;">
+                    <label for="pendant-image" style="display: block; font-weight: bold; margin-bottom: 8px; color: #1e293b;">1. Upload your photo for the pendant:</label>
+                    <input type="file" id="pendant-image" accept="image/png, image/jpeg" required style="width: 100%; background: white;">
+                    <p id="upload-error" style="color: #ef4444; font-size: 14px; display: none; margin-top: 8px; font-weight: 500;">⚠️ Please select an image before proceeding.</p>
+                </div>
+
+                <button id="buy-now-btn" class="primary-btn" style="background: #0f172a; font-size: 17px; padding: 15px;">Buy Now - Secure Checkout</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- SECTION 2: OTP Login (Hidden) -->
+    <section id="login-section" class="container hidden" style="max-width: 500px;">
+        <div class="card" style="text-align: center; padding: 40px;">
+            <h2 style="margin-bottom: 10px;">Login to Continue</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">Please enter your mobile number to receive an OTP.</p>
+            <div id="recaptcha-container"></div>
+            <div id="phone-input-group">
+                <input type="tel" id="phone-number" placeholder="+91 98765 43210" required style="padding: 12px; margin-bottom: 15px;">
+                <button id="send-otp-btn" class="primary-btn" style="background: #0f172a;">Send OTP</button>
+            </div>
+            <div id="otp-input-group" class="hidden">
+                <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" required style="padding: 12px; margin-bottom: 15px;">
+                <button id="verify-otp-btn" class="primary-btn" style="background: #10b981;">Verify & Checkout</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: Address & Payment (Hidden) -->
+    <section id="address-section" class="container hidden" style="max-width: 600px;">
+        <div class="card" style="padding: 40px;">
+            <h2 style="margin-bottom: 20px;">Shipping Details</h2>
+            <form id="checkout-form">
+                <input type="text" id="fullName" placeholder="Full Name" required style="padding: 12px; margin-bottom: 15px;">
+                <input type="text" id="streetAddress" placeholder="Street Address (House No, Street, Area)" required style="padding: 12px; margin-bottom: 15px;">
+                <div class="row" style="display: flex; gap: 15px;">
+                    <input type="text" id="city" placeholder="City" required style="padding: 12px; margin-bottom: 15px; flex: 1;">
+                    <input type="text" id="zipCode" placeholder="Zip/Postal Code" required style="padding: 12px; margin-bottom: 15px; flex: 1;">
+                </div>
+                <button type="submit" id="complete-order-btn" class="primary-btn" style="background: #10b981; font-size: 16px; padding: 14px; margin-top: 10px;">Proceed to Payment</button>
+                <p id="loading-msg" style="text-align: center; color: #0f172a; font-weight: bold; display: none; margin-top: 15px;">🔄 Uploading image securely... Please wait.</p>
+            </form>
+        </div>
+    </section>
+
+    <script src="product.js"></script>
+</body>
+</html>
