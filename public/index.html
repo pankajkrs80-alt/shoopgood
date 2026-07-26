@@ -1,105 +1,373 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Custom Jewelry | Keep Your Loved Ones Close</title>
-    <link rel="stylesheet" href="style.css">
     
-    <!-- Firebase SDKs -->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (For Modern UI) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: '#0f172a',
+                            mint: '#C5F7E2',
+                            blue: '#BAE7F6',
+                            lavender: '#C9C6F6',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(0,0,0,0.05)',
+                        'glow': '0 0 40px -10px rgba(197, 247, 226, 0.5)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Firebase & Razorpay SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        /* Custom tweaks for file inputs and scrollbars */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        input[type="file"]::file-selector-button {
+            background-color: #0f172a;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            padding: 8px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 16px;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: #1e293b;
+        }
+    </style>
 </head>
-<body style="background-color: #fcfcfc;">
-    <!-- Top Navigation Bar -->
-    <header style="width: 100%; max-width: 900px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 20px 0; z-index: 10;">
-        <div style="font-size: 24px; font-weight: bold; color: var(--primary-color);">✨ ShopGood</div>
-        <button id="my-account-btn" class="..." style="background: none; border: 1px solid var(--primary-color); padding: 8px 16px; border-radius: var(--border-radius); cursor: pointer; font-weight: bold; transition: all 0.3s ease;">My Account</button>
+<body class="bg-[#FCFCFC] text-slate-800 antialiased selection:bg-brand-mint selection:text-brand-dark">
+
+    <!-- 1. The Trust Bar -->
+    <div class="w-full bg-brand-mint text-brand-dark py-2.5 px-4 text-xs sm:text-sm font-semibold tracking-wide flex flex-wrap justify-center items-center gap-x-6 gap-y-1">
+        <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            Fast Dispatch (24-48 Hours)
+        </span>
+        <span class="hidden sm:inline opacity-30">|</span>
+        <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            100% Secure Checkout
+        </span>
+    </div>
+
+    <!-- 2. Minimalist Header -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <!-- Replace with Logo Image later: <img src="logo.png" alt="ShopGood" class="h-8"> -->
+            <a href="#" class="text-2xl font-extrabold text-brand-dark tracking-tight">
+                ✨ ShopGood
+            </a>
+            
+            <button id="my-account-btn" class="px-5 py-2.5 rounded-full border-2 border-brand-dark text-brand-dark font-semibold text-sm hover:bg-brand-dark hover:text-white transition-all duration-300">My Account</button>
+        </div>
     </header>
 
     <!-- SECTION 1: Storefront Catalog -->
-    <main id="catalog-section" class="container" style="max-width: 900px; width: 100%;">
+    <main id="catalog-section" class="w-full pb-20">
         
-        <!-- NEW: Hero Banner -->
-        <section style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); border-radius: 16px; margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-            <h1 style="font-size: 2.8em; margin-bottom: 15px; color: #1e293b;">Keep Your Loved Ones Close</h1>
-            <p style="color: #475569; font-size: 1.2em; max-width: 600px; margin: 0 auto;">Custom engraved photo jewelry. Upload your favorite memory and we will craft a timeless piece just for you.</p>
-        </section>
-        
-        <!-- The Grid -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;">
-            
-            <!-- Product Card 1: Customizable Necklace -->
-            <div class="product-card" style="background: white; border: 1px solid #eaeaea; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.2s ease;">
-                <img src="images/Hero.jpg" alt="Customizable Photo Necklace" style="width: 100%; height: 280px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
-                <h3 style="margin: 10px 0; font-size: 22px; color: #0f172a;">Custom Photo Necklace</h3>
-                <p style="color: #64748b; font-size: 15px; margin-bottom: 15px;">Upload your own image to personalize.</p>
-                <h2 style="color: #10b981; margin-bottom: 20px;">₹499.00</h2>
-                <a href="product.html" class="primary-btn" style="display: block; text-decoration: none; padding: 12px; font-size: 16px; background: #0f172a; color: white; border-radius: 6px;">Customize Now</a>
+        <!-- 3. Hero Section (Modern 2-Column Layout) -->
+        <section class="relative max-w-7xl mx-auto px-6 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 lg:gap-8 items-center overflow-hidden">
+            <!-- Background Blob -->
+            <div class="absolute top-0 left-0 w-96 h-96 bg-brand-lavender/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob -z-10"></div>
+            <div class="absolute top-0 right-0 w-96 h-96 bg-brand-blue/30 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 -z-10"></div>
+
+            <!-- Left: Copy & CTA -->
+            <div class="flex flex-col items-center text-center lg:items-start lg:text-left z-10">
+                <span class="inline-block py-1 px-3 rounded-full bg-brand-blue/30 text-brand-dark text-xs font-bold tracking-wider uppercase mb-6 border border-brand-blue/50">
+                    Bestselling Custom Jewelry
+                </span>
+                <h1 class="text-5xl lg:text-6xl font-extrabold text-brand-dark leading-[1.1] tracking-tight mb-6">
+                    Your Favorite Memory, <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-dark to-slate-500">Engraved Forever.</span>
+                </h1>
+                <p class="text-lg text-slate-500 mb-8 max-w-lg leading-relaxed">
+                    We precision-laser engrave your custom photos onto premium jewelry blanks. Crafted in-house, shipped fast, worn close to the heart.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                    <a href="#best-sellers" class="px-8 py-4 rounded-full bg-brand-dark text-white font-semibold shadow-soft hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center text-lg">
+                        Shop Custom Pieces
+                    </a>
+                </div>
+                
+                <!-- Micro Trust -->
+                <div class="mt-8 flex items-center gap-4 text-sm text-slate-500 font-medium">
+                    <div class="flex -space-x-2">
+                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64" alt="Customer">
+                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&h=64" alt="Customer">
+                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&h=64" alt="Customer">
+                    </div>
+                    <p>⭐⭐⭐⭐⭐ Loved by 10,000+ customers</p>
+                </div>
             </div>
 
+            <!-- Right: Dynamic Image Grid -->
+            <div class="grid grid-cols-2 grid-rows-2 gap-4 h-[400px] sm:h-[500px] z-10">
+                <img src="images/Hero.jpg" alt="Necklace" class="row-span-2 w-full h-full object-cover rounded-3xl rounded-tr-sm shadow-soft" onerror="this.src='https://placehold.co/400x600/e2e8f0/64748b?text=Main+Product'">
+                <img src="images/Hero2 (1).jpg" alt="Model" class="w-full h-full object-cover rounded-3xl rounded-bl-sm shadow-soft" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Lifestyle+1'">
+                <img src="images/Lifestyle.jpg" alt="Gift" class="w-full h-full object-cover rounded-3xl rounded-tl-sm shadow-soft" onerror="this.src='https://placehold.co/400x300/e2e8f0/64748b?text=Lifestyle+2'">
+            </div>
+        </section>
+
+        <!-- 4. Value Proposition Strip -->
+        <section class="border-y border-gray-100 bg-white">
+            <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+                <div class="flex flex-col items-center sm:px-6 pt-6 sm:pt-0 first:pt-0">
+                    <div class="w-12 h-12 bg-brand-mint/50 rounded-full flex items-center justify-center mb-4 text-brand-dark">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                    <h3 class="font-bold text-brand-dark mb-2">Premium Materials</h3>
+                    <p class="text-sm text-slate-500">Medical-grade stainless steel that never fades or rusts.</p>
+                </div>
+                <div class="flex flex-col items-center sm:px-6 pt-6 sm:pt-0">
+                    <div class="w-12 h-12 bg-brand-blue/50 rounded-full flex items-center justify-center mb-4 text-brand-dark">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="font-bold text-brand-dark mb-2">Laser Precision</h3>
+                    <p class="text-sm text-slate-500">HD engraving that captures every detail of your photo.</p>
+                </div>
+                <div class="flex flex-col items-center sm:px-6 pt-6 sm:pt-0">
+                    <div class="w-12 h-12 bg-brand-lavender/50 rounded-full flex items-center justify-center mb-4 text-brand-dark">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                    </div>
+                    <h3 class="font-bold text-brand-dark mb-2">Gift Ready</h3>
+                    <p class="text-sm text-slate-500">Arrives in a beautiful box, ready to make them smile.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Best Seller Catalog -->
+        <div id="best-sellers" class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold text-brand-dark mb-2">Our Best Sellers</h2>
+                    <p class="text-slate-500">The perfect blank canvas for your memories.</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Product Card 1 -->
+                <div class="group bg-white rounded-3xl p-4 shadow-sm border border-gray-100 hover:shadow-soft hover:-translate-y-2 transition-all duration-300">
+                    <div class="relative w-full h-64 mb-4 overflow-hidden rounded-2xl bg-gray-50">
+                        <img src="images/Hero.jpg" alt="Custom Photo Necklace" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/400x400/e2e8f0/64748b?text=Product'">
+                        <div class="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-brand-dark shadow-sm">Top Rated</div>
+                    </div>
+                    <div class="px-2">
+                        <h3 class="text-xl font-bold text-brand-dark mb-1">Custom Photo Necklace</h3>
+                        <p class="text-sm text-slate-500 mb-4 line-clamp-1">Personalized laser engraving</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-extrabold text-emerald-600">₹499.00</h2>
+                            <div class="text-xs text-amber-500">★★★★★</div>
+                        </div>
+                        <!-- Links to product.html -->
+                        <a href="product.html" class="block w-full py-3 rounded-full bg-brand-dark text-white font-semibold text-center hover:bg-slate-800 transition-colors">
+                            Customize Now
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Placeholders for filling out the grid visually -->
+                <div class="group bg-white rounded-3xl p-4 shadow-sm border border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+                    <div class="w-full h-64 mb-4 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 font-medium">Coming Soon</div>
+                    <div class="px-2"><h3 class="text-xl font-bold text-gray-400 mb-4">Bar Necklace</h3></div>
+                </div>
+                <div class="group bg-white rounded-3xl p-4 shadow-sm border border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all hidden lg:block">
+                    <div class="w-full h-64 mb-4 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 font-medium">Coming Soon</div>
+                    <div class="px-2"><h3 class="text-xl font-bold text-gray-400 mb-4">Circle Pendant</h3></div>
+                </div>
+                <div class="group bg-white rounded-3xl p-4 shadow-sm border border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all hidden lg:block">
+                    <div class="w-full h-64 mb-4 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 font-medium">Coming Soon</div>
+                    <div class="px-2"><h3 class="text-xl font-bold text-gray-400 mb-4">Keychain Engraving</h3></div>
+                </div>
+            </div>
         </div>
 
-        <!-- NEW: Trust Signals -->
-        <div style="display: flex; flex-wrap: wrap; justify-content: space-around; margin-top: 60px; padding: 30px 10px; border-top: 1px solid #e2e8f0; text-align: center; color: #64748b; font-size: 15px;">
-            <div style="margin: 10px;">🚚 <strong>Free Shipping</strong> on all orders</div>
-            <div style="margin: 10px;">💎 <strong>Premium Quality</strong> materials</div>
-            <div style="margin: 10px;">🔒 <strong>100% Secure</strong> Razorpay checkout</div>
+        <!-- 6. The "Crafted In-House" Trust Multiplier -->
+        <div class="max-w-7xl mx-auto px-6 mb-20">
+            <div class="bg-gradient-to-r from-brand-lavender/40 via-white to-brand-blue/40 rounded-[2rem] p-10 lg:p-16 text-center border border-white shadow-soft relative overflow-hidden">
+                <div class="relative z-10 max-w-2xl mx-auto">
+                    <span class="text-brand-dark font-bold tracking-widest uppercase text-sm mb-4 block opacity-80">Our Promise</span>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-brand-dark mb-6">Made By Us, Just For You.</h2>
+                    <p class="text-lg text-slate-700 leading-relaxed mb-8">
+                        No dropshipping. No overseas wait times. Every piece is precision laser-engraved in our own workshop to guarantee flawless quality and rapid delivery straight to your door.
+                    </p>
+                    <a href="#best-sellers" class="inline-block px-8 py-3 rounded-full bg-white text-brand-dark font-bold shadow-sm hover:shadow-md transition-all">
+                        View Collection
+                    </a>
+                </div>
+            </div>
         </div>
+
+        <!-- 7. Real Customer Reviews -->
+        <section class="bg-white py-20 border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-brand-dark mb-4">Loved by Thousands</h2>
+                    <p class="text-slate-500">Don't just take our word for it.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Review 1 -->
+                    <div class="bg-[#FCFCFC] p-8 rounded-3xl border border-gray-100 shadow-sm relative">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-brand-mint/30 rounded-bl-full rounded-tr-3xl -z-0"></div>
+                        <div class="text-amber-400 text-xl mb-4 relative z-10">★★★★★</div>
+                        <p class="text-slate-700 italic mb-6 relative z-10">"I was worried the photo would look blurry on metal, but the laser engraving is incredibly sharp! Arrived in just 4 days."</p>
+                        <div class="flex items-center gap-3 relative z-10">
+                            <div class="w-10 h-10 rounded-full bg-brand-mint flex items-center justify-center text-brand-dark font-bold">S</div>
+                            <div>
+                                <p class="font-bold text-brand-dark text-sm">Sarah M.</p>
+                                <p class="text-xs text-emerald-600 font-medium">✓ Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Review 2 -->
+                    <div class="bg-[#FCFCFC] p-8 rounded-3xl border border-gray-100 shadow-sm relative mt-4 md:mt-8">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-brand-blue/30 rounded-bl-full rounded-tr-3xl -z-0"></div>
+                        <div class="text-amber-400 text-xl mb-4 relative z-10">★★★★★</div>
+                        <p class="text-slate-700 italic mb-6 relative z-10">"Bought this after seeing it on Instagram. The quality is so much better than I expected for the price. I wear it every day."</p>
+                        <div class="flex items-center gap-3 relative z-10">
+                            <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-brand-dark font-bold">P</div>
+                            <div>
+                                <p class="font-bold text-brand-dark text-sm">Priya K.</p>
+                                <p class="text-xs text-emerald-600 font-medium">✓ Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="bg-[#FCFCFC] p-8 rounded-3xl border border-gray-100 shadow-sm relative mt-8 md:mt-16">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-brand-lavender/30 rounded-bl-full rounded-tr-3xl -z-0"></div>
+                        <div class="text-amber-400 text-xl mb-4 relative z-10">★★★★★</div>
+                        <p class="text-slate-700 italic mb-6 relative z-10">"A perfect gift. I had a picture of my late grandmother engraved and I cried when I opened the box. Thank you guys."</p>
+                        <div class="flex items-center gap-3 relative z-10">
+                            <div class="w-10 h-10 rounded-full bg-brand-lavender flex items-center justify-center text-brand-dark font-bold">A</div>
+                            <div>
+                                <p class="font-bold text-brand-dark text-sm">Ananya R.</p>
+                                <p class="text-xs text-emerald-600 font-medium">✓ Verified Buyer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-white py-12 border-t border-gray-100 text-center">
+            <div class="flex justify-center gap-8 mb-6 text-sm font-medium text-slate-500">
+                <a href="#" class="hover:text-brand-dark transition-colors">Contact Us</a>
+                <a href="#" class="hover:text-brand-dark transition-colors">Shipping Policy</a>
+                <a href="#" class="hover:text-brand-dark transition-colors">Refund Policy</a>
+            </div>
+            <p class="text-slate-400 text-sm">© 2024 ShopGood. Crafted with precision.</p>
+        </footer>
     </main>
 
     <!-- SECTION 2: OTP Login (Hidden by default) -->
-    <section id="login-section" class="container hidden">
-        <div class="card" style="max-width: 400px; margin: 0 auto; text-align: center; padding: 40px 20px;">
-            <h2 style="margin-bottom: 10px;">Welcome Back</h2>
-            <p style="color: #64748b; margin-bottom: 20px;">Enter your mobile number to access your order history.</p>
+    <section id="login-section" class="hidden min-h-[70vh] flex items-center justify-center p-6">
+        <div class="w-full max-w-md bg-white rounded-[2rem] p-10 shadow-soft border border-gray-100 text-center relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand-mint/40 rounded-full blur-2xl"></div>
+            
+            <h2 class="text-3xl font-extrabold text-brand-dark mb-2 relative z-10">Welcome Back</h2>
+            <p class="text-slate-500 mb-8 relative z-10">Enter your mobile number to securely access your order history.</p>
+            
             <div id="recaptcha-container"></div>
-            <div id="phone-input-group">
-                <input type="tel" id="phone-number" placeholder="+91 98765 43210" required style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px;">
-                <button id="send-otp-btn" class="primary-btn" style="width: 100%; padding: 12px; background: #0f172a; color: white; border: none; border-radius: 6px; cursor: pointer;">Send OTP</button>
+            
+            <div id="phone-input-group" class="relative z-10">
+                <input type="tel" id="phone-number" placeholder="+91 98765 43210" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 outline-none transition-all mb-4 text-center text-lg font-medium tracking-wide">
+                <button id="send-otp-btn" class="w-full py-4 rounded-full bg-brand-dark text-white font-bold hover:bg-slate-800 transition-colors">Send OTP Code</button>
             </div>
-            <div id="otp-input-group" class="hidden">
-                <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" required style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px;">
-                <button id="verify-otp-btn" class="primary-btn" style="width: 100%; padding: 12px; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer;">Verify & Login</button>
+            
+            <div id="otp-input-group" class="hidden relative z-10">
+                <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 outline-none transition-all mb-4 text-center text-2xl font-bold tracking-[0.5em]">
+                <button id="verify-otp-btn" class="w-full py-4 rounded-full bg-emerald-500 text-white font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all">Verify & Login</button>
             </div>
         </div>
     </section>
 
     <!-- SECTION 3: Address Form (Hidden by default, kept for app.js stability) -->
-    <section id="address-section" class="container hidden">
-        <div class="card">
-            <h2>Shipping Details</h2>
-            <form id="checkout-form">
-                <input type="text" id="fullName" placeholder="Full Name" required>
-                <input type="text" id="streetAddress" placeholder="Street Address" required>
-                <div class="row">
-                    <input type="text" id="city" placeholder="City" required>
-                    <input type="text" id="zipCode" placeholder="Zip/Postal Code" required>
+    <section id="address-section" class="hidden min-h-[70vh] flex items-center justify-center p-6">
+        <div class="w-full max-w-lg bg-white rounded-[2rem] p-10 shadow-soft border border-gray-100">
+            <h2 class="text-2xl font-bold text-brand-dark mb-6 text-center">Shipping Details</h2>
+            <form id="checkout-form" class="space-y-4">
+                <input type="text" id="fullName" placeholder="Full Name" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                <input type="text" id="streetAddress" placeholder="Street Address" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                <div class="flex gap-4">
+                    <input type="text" id="city" placeholder="City" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                    <input type="text" id="zipCode" placeholder="Postal Code" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-2 focus:ring-brand-blue outline-none transition-all">
                 </div>
-                <button type="submit" class="primary-btn">Complete Order</button>
+                <button type="submit" class="w-full py-4 mt-4 rounded-full bg-emerald-500 text-white font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all">Complete Order</button>
             </form>
         </div>
     </section>
 
     <!-- SECTION 4: Customer Dashboard (Hidden by default) -->
-    <section id="account-section" class="container hidden">
-        <div class="card" style="max-width: 700px; margin: 0 auto; padding: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px; margin-bottom: 25px;">
-                <h2 style="margin: 0;">My Account</h2>
-                <button id="logout-btn" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold;">Logout</button>
+    <section id="account-section" class="hidden min-h-[80vh] py-12 px-6">
+        <div class="max-w-3xl mx-auto">
+            <!-- Dashboard Header -->
+            <div class="flex justify-between items-center bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-8">
+                <h2 class="text-2xl font-bold text-brand-dark">My Account</h2>
+                <button id="logout-btn" class="px-6 py-2 rounded-full bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition-colors">Logout</button>
             </div>
-            <h3 style="color: #475569; margin-bottom: 15px;">Profile Details</h3>
-            <div id="profile-details" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+            
+            <!-- Profile Details -->
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-blue/20 rounded-bl-full -z-0"></div>
+                <h3 class="text-lg font-bold text-slate-800 mb-6 relative z-10">Profile Details</h3>
+                <div id="profile-details" class="relative z-10 text-slate-600 space-y-2">
+                    <!-- Javascript will inject data here -->
+                </div>
             </div>
-            <h3 style="color: #475569; margin-bottom: 15px;">My Orders</h3>
-            <div id="orders-list">
+            
+            <!-- Orders List -->
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    My Orders
+                    <span class="px-2 py-1 bg-brand-mint text-brand-dark text-xs rounded-full">Secured</span>
+                </h3>
+                <div id="orders-list" class="space-y-4">
+                    <!-- Javascript will inject order cards here -->
+                </div>
             </div>
-            <button id="back-to-shop-btn" class="primary-btn" style="margin-top: 25px; background: #0f172a; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer;" onclick="window.location.reload();">← Back to Shop</button>
+            
+            <!-- Back Button -->
+            <div class="mt-8 text-center">
+               <button id="back-to-shop-btn" class="primary-btn" style="margin-top: 25px; background: #0f172a; color: white; padding: 10px 20px; border: none; border-radius: 40px; cursor: pointer;">← Back to Shop</button>
+            </div>
         </div>
     </section>
 
+    <!-- Core App Logic -->
     <script src="app.js"></script>
 </body>
 </html>

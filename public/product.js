@@ -7,7 +7,9 @@ const firebaseConfig = {
     messagingSenderId: "990509179696",
     appId: "1:990509179696:web:690f44a01bbb71b56edef5"
 };
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -32,10 +34,10 @@ window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-contai
 document.getElementById('buy-now-btn').addEventListener('click', () => {
     // Check if an image was selected
     if (imageInput.files.length === 0) {
-        uploadError.style.display = 'block';
+        uploadError.classList.remove('hidden'); // Updated for Tailwind
         return;
     }
-    uploadError.style.display = 'none';
+    uploadError.classList.add('hidden'); // Updated for Tailwind
 
     // Move to login or address section
     if (currentUser) {
@@ -96,93 +98,89 @@ async function loadUserAddress() {
 document.getElementById('checkout-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // UI Loading state
-    completeOrderBtn.style.display = 'none';
-    loadingMsg.style.display = 'block';
+    // UI Loading state (Tailwind toggles)
+    completeOrderBtn.classList.add('hidden');
+    loadingMsg.classList.remove('hidden');
 
     const file = imageInput.files[0];
-    const fullName = document.getElementById('fullName').value;
-    const streetAddress = document.getElementById('streetAddress').value;
-    const city = document.getElementById('city').value;
-    const zipCode = document.getElementById('zipCode').value;
+        const fullName = document.getElementById('fullName').value;
+        const streetAddress = document.getElementById('streetAddress').value;
+        const city = document.getElementById('city').value;
+        const zipCode = document.getElementById('zipCode').value;
 
-    try {
-        // A. Upload Image to ImgBB
-        const imgbbApiKey = "979703ccbef01ef78d075cd6e3769125"; 
-        const formData = new FormData();
-        formData.append("image", file);
+        try {
+            // A. Upload Image to ImgBB
+            const imgbbApiKey = "979703ccbef01ef78d075cd6e3769125"; 
+            const formData = new FormData();
+            formData.append("image", file);
 
-        const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
-            method: "POST",
-            body: formData
-        });
-        
-        const imgbbData = await imgbbResponse.json();
-        
-        if (!imgbbData.success) {
-            throw new Error("Image upload failed");
-        }
-
-        // Get the secure public URL from ImgBB
-        const imageUrl = imgbbData.data.url;
-
-        // B. Clean Phone Number for Razorpay
-        const rawPhone = currentUser.phoneNumber || "9999999999"; 
-        const finalPhone = rawPhone.replace(/\D/g, '').slice(-10);
-
-        // C. Trigger Razorpay
-        const options = {
-            "key": "rzp_test_w79rV4Vq76jNyY", 
-            "amount": "49900", 
-            "currency": "INR",
-            "name": "Custom Photo Necklace",
-            "description": "Custom Jewelry Order",
-            "prefill": {
-                "name": fullName,
-                "email": "customer@yourstore.com",
-                "contact": finalPhone
-            },
-            "readonly": {
-                "contact": true,
-                "email": true
-            },
-            "theme": { "color": "#000000" },
+            const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+                method: "POST",
+                body: formData
+            });
             
-            // FIX: Using an arrow function here guarantees 'imageUrl' is remembered
-            "handler": async (response) => { 
-                const paymentId = response.razorpay_payment_id;
+            const imgbbData = await imgbbResponse.json();
+            
+            if (!imgbbData.success) {
+                throw new Error("Image upload failed");
+            }
 
-                // Tracker 1: Let's prove the image URL survived the payment
-                console.log("1. Payment ID:", paymentId);
-                console.log("2. Image URL from ImgBB:", imageUrl);
+            // Get the secure public URL from ImgBB
+            const imageUrl = imgbbData.data.url;
 
-                // D. Save Order to Database
-                const orderData = {
-                    userId: currentUser.uid,
-                    phoneNumber: currentUser.phoneNumber,
-                    fullName: fullName,
-                    streetAddress: streetAddress,
-                    city: city,
-                    zipCode: zipCode,
-                    affiliateCode: affiliateRef,
-                    paymentId: paymentId, 
-                    customImageUrl: imageUrl, // <-- Securely passed in
-                    status: 'paid', 
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+            // B. Clean Phone Number for Razorpay
+            const rawPhone = currentUser.phoneNumber || "9999999999"; 
+            const finalPhone = rawPhone.replace(/\D/g, '').slice(-10);
 
-                // Tracker 2: Prove exactly what we are sending to Firestore
-                console.log("3. Sending this exact data to Firestore:", orderData);
-
-                try {
-                    await db.collection('orders').add(orderData);
+            // C. Trigger Razorpay
+            const options = {
+                "key": "rzp_test_w79rV4Vq76jNyY", 
+                "amount": "49900", 
+                "currency": "INR",
+                "name": "ShopGood",
+                "description": "Custom Photo Necklace",
+                "prefill": {
+                    "name": fullName,
+                    "email": "customer@shopgood.com",
+                    "contact": finalPhone
+                },
+                "readonly": {
+                    "contact": true,
+                    "email": true
+                },
+                "theme": { "color": "#0f172a" },
+                
+                "handler": async (response) => { 
+                    const paymentId = response.razorpay_payment_id;
                     
-                    await db.collection('users').doc(currentUser.uid).set({
-                        fullName, streetAddress, city, zipCode,
-                        lastOrderDate: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true });
+                    // Tracker 1: Let's prove the image URL survived the payment
+                    console.log("1. Payment ID:", paymentId);
+                    console.log("2. Image URL from ImgBB:", imageUrl);
 
-                    if (affiliateRef !== 'none') {
+                    // D. Save Order to Database
+                    const orderData = {
+                        userId: currentUser.uid,
+                        phoneNumber: currentUser.phoneNumber,
+                        fullName: fullName,
+                        streetAddress: streetAddress,
+                        city: city,
+                        zipCode: zipCode,
+                        affiliateCode: affiliateRef,
+                        paymentId: paymentId, 
+                        customImageUrl: imageUrl, // <-- Securely passed in
+                        status: 'paid', 
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    try {
+                        await db.collection('orders').add(orderData);
+                        
+                        await db.collection('users').doc(currentUser.uid).set({
+                            fullName, streetAddress, city, zipCode,
+                            lastOrderDate: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+
+                        if (affiliateRef !== 'none') {
                         await db.collection('affiliates').doc(affiliateRef).set({
                             totalSales: firebase.firestore.FieldValue.increment(1),
                             totalCommission: firebase.firestore.FieldValue.increment(100),
@@ -190,14 +188,26 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
                         }, { merge: true });
                     }
 
-                    addressSection.innerHTML = `
-                        <div class="card" style="text-align: center; padding: 40px 20px;">
-                            <h2 style="color: #10b981;">Payment Successful! 🎉</h2>
-                            <p>Thank you, ${fullName}. Your order (ID: ${paymentId}) is confirmed.</p>
-                            <p>We have successfully received your custom photo.</p>
-                            <a href="index.html" class="primary-btn" style="text-decoration: none; display: inline-block; margin-top: 20px;">Back to Shop</a>
-                        </div>
-                    `;
+                    // Success Screen (Styled with premium Tailwind CSS)
+                    const addressSecInner = document.querySelector('#address-section > div');
+                    if (addressSecInner) {
+                        addressSecInner.innerHTML = `
+                            <div class="text-center">
+                                <span class="inline-block w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </span>
+                                <h2 class="text-3xl font-bold text-brand-dark mb-4">Payment Successful!</h2>
+                                <p class="text-slate-600 mb-2">Thank you, <strong>${fullName}</strong>. Your order is confirmed.</p>
+                                <p class="text-sm text-slate-400 mb-6 font-mono">Payment ID: ${paymentId}</p>
+                                <div class="bg-blue-50 text-blue-800 p-4 rounded-xl mb-8 font-medium">
+                                    We have securely received your photo. Our jewelers are reviewing it now.
+                                </div>
+                                <a href="index.html" class="inline-block px-8 py-4 rounded-full bg-brand-dark text-white font-bold hover:bg-slate-800 transition-colors shadow-soft hover:-translate-y-1">
+                                    Return to Store
+                                </a>
+                            </div>
+                        `;
+                    }
                 } catch (dbError) {
                     console.error("Firestore Save Error:", dbError);
                     alert("Payment succeeded, but we had trouble saving your order.");
@@ -207,15 +217,15 @@ document.getElementById('checkout-form').addEventListener('submit', async (e) =>
         const rzp1 = new Razorpay(options);
         rzp1.on('payment.failed', function (response){
             alert("Payment Failed. Reason: " + response.error.description);
-            completeOrderBtn.style.display = 'block';
-            loadingMsg.style.display = 'none';
+            completeOrderBtn.classList.remove('hidden');
+            loadingMsg.classList.add('hidden');
         });
         rzp1.open();
 
     } catch (error) {
         console.error("Error during checkout process:", error);
         alert("An error occurred while uploading your image. Please try again.");
-        completeOrderBtn.style.display = 'block';
-        loadingMsg.style.display = 'none';
+        completeOrderBtn.classList.remove('hidden');
+        loadingMsg.classList.add('hidden');
     }
 });
