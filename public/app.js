@@ -23,11 +23,16 @@ const db = firebase.firestore();
 let currentUser = null;
 let confirmationResult = null;
 
-const myAccountBtn = document.getElementById('my-account-btn');
+// Sections
 const catalogSection = document.getElementById('catalog-section');
 const loginSection = document.getElementById('login-section');
 const accountSection = document.getElementById('account-section');
-const addressSection = document.getElementById('address-section'); // Kept for safety
+const addressSection = document.getElementById('address-section'); 
+
+// Buttons
+const myAccountBtn = document.getElementById('my-account-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const backToShopBtn = document.getElementById('back-to-shop-btn');
 
 // ==========================================
 // 3. AUTH STATE MONITOR
@@ -65,7 +70,7 @@ if (myAccountBtn) {
             }
         }
         
-        // Scroll to top of the page
+        // Scroll to top of the page smoothly
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
@@ -104,6 +109,19 @@ if (verifyOtpBtn) {
         confirmationResult.confirm(code).then(async (result) => {
             currentUser = result.user;
             
+            // Save basic user info if first login
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (!userDoc.exists) {
+                    await db.collection('users').doc(currentUser.uid).set({
+                        phoneNumber: currentUser.phoneNumber,
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    });
+                }
+            } catch(e) {
+                console.error(e);
+            }
+
             // Successfully verified! Move from Login to Dashboard
             if (loginSection) loginSection.classList.add('hidden');
             if (accountSection) {
@@ -120,7 +138,6 @@ if (verifyOtpBtn) {
 // ==========================================
 // 6. SUB-NAVIGATION BUTTONS
 // ==========================================
-const backToShopBtn = document.getElementById('back-to-shop-btn');
 if (backToShopBtn) {
     backToShopBtn.addEventListener('click', () => {
         if (accountSection) accountSection.classList.add('hidden');
@@ -130,11 +147,10 @@ if (backToShopBtn) {
     });
 }
 
-const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
         auth.signOut().then(() => {
-            window.location.href = window.location.pathname; 
+            window.location.href = 'index.html'; 
         });
     });
 }
