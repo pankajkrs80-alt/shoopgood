@@ -1,74 +1,136 @@
-// ... existing code ...
-// 7. Order Submission (Null-Safe)
-const checkoutForm = document.getElementById('checkout-form');
-if (checkoutForm) {
-    checkoutForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        // ... Checkout logic remains handled in product.js ...
-    });
+// ==========================================
+// 1. INITIALIZE FIREBASE
+// ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyAi-UUUJdje3uyuKqcQRkCPUelH7Zx3N-U",
+    authDomain: "shopgood-5f298.firebaseapp.com",
+    projectId: "shopgood-5f298",
+    storageBucket: "shopgood-5f298.firebasestorage.app",
+    messagingSenderId: "990509179696",
+    appId: "1:990509179696:web:690f44a01bbb71b56edef5"
+};
+
+// Prevent duplicate initialization errors
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
 }
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 // ==========================================
-// 8. CUSTOMER DASHBOARD & NAVIGATION LOGIC
+// 2. GLOBAL STATE & UI ELEMENTS
 // ==========================================
+let currentUser = null;
+let confirmationResult = null;
 
 const myAccountBtn = document.getElementById('my-account-btn');
+const catalogSection = document.getElementById('catalog-section');
+const loginSection = document.getElementById('login-section');
 const accountSection = document.getElementById('account-section');
-const logoutBtn = document.getElementById('logout-btn');
-const backToShopBtn = document.getElementById('back-to-shop-btn');
-const catalogSection = document.getElementById('catalog-section'); 
+const addressSection = document.getElementById('address-section'); // Kept for safety
 
-// 1. Keep button visible, just track user state
+// ==========================================
+// 3. AUTH STATE MONITOR
+// ==========================================
 auth.onAuthStateChanged((user) => {
-    if (user) {
-        currentUser = user;
-    } else {
-        currentUser = null;
-    }
+    currentUser = user;
 });
 
-// 2. Click Logic: Login Screen OR Dashboard
+// ==========================================
+// 4. MAIN NAVIGATION: "MY ACCOUNT" BUTTON
+// ==========================================
 if (myAccountBtn) {
     myAccountBtn.addEventListener('click', () => {
-        // Hide storefront safely
+        // 1. Hide the storefront
         if (catalogSection) catalogSection.classList.add('hidden');
-        if (productSection) productSection.classList.add('hidden');
         if (addressSection) addressSection.classList.add('hidden');
 
-        if (!currentUser) {
-            // NOT LOGGED IN: Show Login Screen
-            if (loginSection) loginSection.classList.remove('hidden');
-            
-            // BULLETPROOF RECAPTCHA: Only set it up if it doesn't exist yet!
-            if (!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'invisible'
-                });
-            }
-        } else {
-            // LOGGED IN: Show Account Dashboard
+        if (currentUser) {
+            // LOGGED IN: Show the Dashboard
             if (loginSection) loginSection.classList.add('hidden');
             if (accountSection) {
                 accountSection.classList.remove('hidden');
                 loadAccountData();
             }
+        } else {
+            // NOT LOGGED IN: Show the Login Screen
+            if (accountSection) accountSection.classList.add('hidden');
+            if (loginSection) loginSection.classList.remove('hidden');
+
+            // Setup Recaptcha safely (only once!)
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible'
+                });
+            }
         }
-        window.scrollTo(0,0);
+        
+        // Scroll to top of the page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
-// 3. Bulletproof "Back to Shop" button
+// ==========================================
+// 5. OTP LOGIN FLOW
+// ==========================================
+const sendOtpBtn = document.getElementById('send-otp-btn');
+if (sendOtpBtn) {
+    sendOtpBtn.addEventListener('click', () => {
+        const phoneNumber = document.getElementById('phone-number').value;
+        
+        // Basic validation
+        if(phoneNumber.length < 10) {
+            alert("Please enter a valid mobile number.");
+            return;
+        }
+
+        auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+            .then((result) => {
+                confirmationResult = result;
+                document.getElementById('phone-input-group').classList.add('hidden');
+                document.getElementById('otp-input-group').classList.remove('hidden');
+            }).catch((error) => {
+                console.error("SMS not sent", error);
+                alert("Error sending OTP. Ensure number includes country code (e.g., +91).");
+            });
+    });
+}
+
+const verifyOtpBtn = document.getElementById('verify-otp-btn');
+if (verifyOtpBtn) {
+    verifyOtpBtn.addEventListener('click', () => {
+        const code = document.getElementById('otp-code').value;
+        
+        confirmationResult.confirm(code).then(async (result) => {
+            currentUser = result.user;
+            
+            // Successfully verified! Move from Login to Dashboard
+            if (loginSection) loginSection.classList.add('hidden');
+            if (accountSection) {
+                accountSection.classList.remove('hidden');
+                loadAccountData();
+            }
+        }).catch((error) => {
+            console.error("Invalid OTP", error);
+            alert("Invalid OTP code. Please try again.");
+        });
+    });
+}
+
+// ==========================================
+// 6. SUB-NAVIGATION BUTTONS
+// ==========================================
+const backToShopBtn = document.getElementById('back-to-shop-btn');
 if (backToShopBtn) {
     backToShopBtn.addEventListener('click', () => {
         if (accountSection) accountSection.classList.add('hidden');
         if (loginSection) loginSection.classList.add('hidden');
-        if (catalogSection) catalogSection.classList.remove('hidden'); 
-        if (productSection) productSection.classList.remove('hidden'); 
-        window.scrollTo(0,0);
+        if (catalogSection) catalogSection.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
 
-// 4. Logout User (Force page reset)
+const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
         auth.signOut().then(() => {
@@ -77,17 +139,21 @@ if (logoutBtn) {
     });
 }
 
-// 5. Fetch Profile and Orders (Updated with Tailwind CSS styling!)
+// ==========================================
+// 7. LOAD CUSTOMER DASHBOARD DATA
+// ==========================================
 async function loadAccountData() {
     const profileDiv = document.getElementById('profile-details');
     const ordersDiv = document.getElementById('orders-list');
     
     if (!profileDiv || !ordersDiv) return;
 
+    // Show Tailwind Loading states
     profileDiv.innerHTML = "<p class='text-slate-500 font-medium animate-pulse'>Loading profile...</p>";
     ordersDiv.innerHTML = "<p class='text-slate-500 font-medium animate-pulse'>Loading orders...</p>";
     
     try {
+        // Fetch Profile
         const userDoc = await db.collection('users').doc(currentUser.uid).get();
         if (userDoc.exists) {
             const data = userDoc.data();
@@ -98,8 +164,11 @@ async function loadAccountData() {
                     <p><strong class="text-brand-dark">Address:</strong> ${data.streetAddress ? `${data.streetAddress}, ${data.city}, ${data.zipCode}` : 'Not provided yet'}</p>
                 </div>
             `;
+        } else {
+            profileDiv.innerHTML = `<p class='text-slate-500'>Profile details will appear here after your first purchase.</p>`;
         }
 
+        // Fetch Orders
         const ordersSnapshot = await db.collection('orders')
                                      .where('userId', '==', currentUser.uid)
                                      .get();
@@ -113,6 +182,7 @@ async function loadAccountData() {
                 const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
                 const orderDate = order.createdAt ? order.createdAt.toDate().toLocaleDateString(undefined, dateOptions) : 'Just now';
                 
+                // Securely render image link if it exists
                 const imageLink = order.customImageUrl 
                     ? `<div class="mt-4 pt-4 border-t border-gray-100">
                            <a href="${order.customImageUrl}" target="_blank" class="text-brand-blue font-bold hover:text-blue-500 transition-colors flex items-center gap-2">
@@ -122,6 +192,7 @@ async function loadAccountData() {
                        </div>` 
                     : '';
 
+                // Tailwind styled Order Card
                 ordersHtml += `
                     <div class="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm mb-4 hover:shadow-soft transition-shadow">
                         <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
