@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Photo Necklace | ShopGood</title>
+    <title>Engraved Bar Necklace | ShopGood</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -97,8 +97,8 @@
                 Back to Shop
             </a>
             
-            <a href="index.html" class="text-2xl font-extrabold text-brand-dark tracking-tight hidden sm:block">
-                ✨ ShopGood
+            <a href="index.html" class="flex items-center hover:opacity-80 transition-opacity">
+                <img src="images/Website Icon Logo 600 by 180.png" alt="Shopgood- Gift Store" class="h-10 sm:h-12 w-auto object-contain">
             </a>
             
             <div class="w-24"></div> <!-- Spacer to keep logo centered -->
@@ -110,60 +110,100 @@
         
         <div class="bg-white rounded-[2rem] p-6 lg:p-12 shadow-soft border border-gray-100 grid lg:grid-cols-2 gap-12 items-start relative overflow-hidden">
             <!-- Background Blob -->
-            <div class="absolute top-0 right-0 w-96 h-96 bg-brand-blue/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 pointer-events-none -z-0"></div>
+            <div class="absolute top-0 right-0 w-96 h-96 bg-brand-lavender/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 pointer-events-none -z-0"></div>
             
             <!-- Left: Image Gallery -->
             <div class="relative z-10 space-y-4">
                 <div class="w-full h-[400px] sm:h-[500px] rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 relative">
-                    <img src="images/Hero.jpg" alt="Custom Photo Necklace" class="w-full h-full object-cover" id="active-preview" onerror="this.src='https://placehold.co/600x800/e2e8f0/64748b?text=Product+Preview'">
+                    <!-- Placeholder using a classy unplash image for a bar necklace -->
+                    <img src="images/Bar Pendent/Gold Hero.png" alt="Engraved Bar Necklace" class="w-full h-full object-cover" id="active-preview" onerror="this.src='https://placehold.co/600x800/e2e8f0/64748b?text=Bar+Necklace'">
                     
                     <!-- Micro Trust Badge -->
                     <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-bold text-brand-dark shadow-sm border border-gray-100 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        In High Demand
+                        Top Rated Gift
                     </div>
                 </div>
                 
                 <div class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
-                    <img src="images/Hero.jpg" alt="Thumb Main" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=1'">
-                    <img src="images/Hero2 (1).jpg" alt="Thumb 1" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=2'">
-                    <img src="images/Lifestyle.jpg" alt="Thumb 2" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=3'">
-                </div>
+                    <img src="images/Bar Pendent/Gold Hero.png" alt="Thumb Main" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
+                    <img src="images/Bar Pendent/Silver Customisation Options.jpg" alt="Thumb 1" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
+                    <img src="images/Bar Pendent/Gold Lifestyle.jpg" alt="Thumb 1" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
+                    <img src="images/Bar Pendent/Rosegold Customisation option.jpg" alt="Thumb 1" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">                </div>
             </div>
             
             <!-- Right: Product Info & Upload Form -->
             <div class="relative z-10 flex flex-col justify-center h-full">
-                <span class="inline-block py-1 px-3 rounded-full bg-brand-lavender/30 text-brand-dark text-xs font-bold tracking-wider uppercase mb-4 border border-brand-lavender/50 w-fit">
+                <span class="inline-block py-1 px-3 rounded-full bg-brand-blue/30 text-brand-dark text-xs font-bold tracking-wider uppercase mb-4 border border-brand-blue/50 w-fit">
                     Personalized For You
                 </span>
                 
-                <h1 class="text-4xl sm:text-5xl font-extrabold text-brand-dark leading-tight mb-2 tracking-tight">
-                    Custom Photo Necklace
+                <h1 id="product-title" class="text-4xl sm:text-5xl font-extrabold text-brand-dark leading-tight mb-2 tracking-tight">
+                    Customised Bar Necklace
                 </h1>
                 
                 <!-- Social Proof -->
                 <div class="flex items-center gap-2 mb-6">
                     <div class="text-amber-400 text-lg">★★★★★</div>
-                    <span class="text-sm text-slate-500 font-medium">(48 Verified Reviews)</span>
+                    <span class="text-sm text-slate-500 font-medium">(112 Verified Reviews)</span>
                 </div>
                 
                 <p class="text-lg text-slate-600 mb-8 leading-relaxed">
-                    Keep your loved ones close to your heart. Upload your favorite photo, and our master jewelers will precision-laser engrave it directly into this premium pendant. Will never fade or rust.
+                    Sleek, modern, and deeply meaningful. Customize this solid bar pendant with a special date, a loved one's name, coordinates, or even a small photo engraving.
                 </p>
                 
                 <div class="flex items-baseline gap-4 mb-8">
-                    <h2 class="text-4xl font-extrabold text-emerald-600">₹499.00</h2>
+                    <!-- Price configured for Bar Necklace (39900 = ₹399.00) -->
+                    <h2 id="product-price" data-price="39900" class="text-4xl font-extrabold text-emerald-600">₹299.00</h2>
                     <span class="text-slate-400 line-through font-medium text-lg">₹999.00</span>
                 </div>
-                
-                <!-- Image Upload Box -->
-                <div class="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 mb-8 hover:border-brand-blue transition-colors group">
-                    <label for="pendant-image" class="block font-bold text-brand-dark mb-4 text-lg group-hover:text-brand-blue transition-colors">
-                        1. Upload your photo
+<!-- STEP 2 & 3: Custom Text Engraving -->
+                <div class="mb-6 space-y-4">
+                    <div>
+                        <label for="front-text" class="block font-bold text-brand-dark mb-2 text-lg">
+                            1. Front Text Engraving <span class="text-slate-400 text-sm font-normal">(Max 20 chars)</span>
+                        </label>
+                        <input type="text" id="front-text" maxlength="20" placeholder="e.g., I Love You, Sarah" class="w-full px-5 py-4 rounded-2xl bg-white border border-gray-200 focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 outline-none transition-all shadow-sm">
+                    </div>
+                    <div>
+                        <label for="back-text" class="block font-bold text-brand-dark mb-2 text-lg">
+                            2. Back Text Engraving <span class="text-slate-400 text-sm font-normal">(Optional)</span>
+                        </label>
+                        <input type="text" id="back-text" maxlength="20" placeholder="e.g., 12.04.2023" class="w-full px-5 py-4 rounded-2xl bg-white border border-gray-200 focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 outline-none transition-all shadow-sm">
+                    </div>
+                </div>
+
+                <!-- STEP 4: Color Selection -->
+                <div class="mb-6">
+                    <label for="color-style" class="block font-bold text-brand-dark mb-4 text-lg">
+                        3. Select Pendant Color
                     </label>
-                    <input type="file" id="pendant-image" accept="image/png, image/jpeg" required class="w-full bg-white p-2 rounded-xl border border-gray-100 shadow-sm outline-none focus:ring-2 focus:ring-brand-blue">
-                    <p class="text-xs text-slate-500 mt-3 font-medium">JPEG or PNG. High-contrast, well-lit photos work best.</p>
-                    <p id="upload-error" class="hidden text-red-500 text-sm mt-2 font-bold animate-pulse">⚠️ Please select an image before proceeding.</p>
+                    <div class="relative">
+                        <select id="color-style" class="w-full appearance-none bg-white border border-gray-200 text-slate-800 py-4 px-5 pr-8 rounded-2xl outline-none focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 transition-all font-medium cursor-pointer shadow-sm">
+                            <option value="Silver">Silver (Stainless Steel)</option>
+                            <option value="Gold">18k Gold Plated</option>
+                            <option value="Rose Gold">Rose Gold Plated</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-slate-500">
+                            <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Chain Selection -->
+                <div class="mb-8">
+                    <label for="chain-style" class="block font-bold text-brand-dark mb-4 text-lg">
+                        4. Select Chain Style
+                    </label>
+                    <div class="relative">
+                        <select id="chain-style" class="w-full appearance-none bg-white border border-gray-200 text-slate-800 py-4 px-5 pr-8 rounded-2xl outline-none focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 transition-all font-medium cursor-pointer shadow-sm">
+                            <option value="Men's Box Chain (22 inch)">Men's Box Chain (22")</option>
+                            <option value="Women's Cable Chain (18 inch)">Women's Cable Chain (18")</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 text-slate-500">
+                            <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
                 </div>
 
                 <button id="buy-now-btn" class="w-full py-5 rounded-full bg-brand-dark text-white font-bold text-lg shadow-soft hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-3">
@@ -173,8 +213,8 @@
                 
                 <!-- Micro Trust -->
                 <div class="mt-6 flex justify-center items-center gap-6 text-xs font-medium text-slate-500">
-                    <span class="flex items-center gap-1"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Premium Metal</span>
-                    <span class="flex items-center gap-1"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Water Resistant</span>
+                    <span class="flex items-center gap-1"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Premium Metals</span>
+                    <span class="flex items-center gap-1"><svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Gift Packaging</span>
                 </div>
             </div>
         </div>
@@ -186,7 +226,7 @@
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand-mint/40 rounded-full blur-2xl pointer-events-none"></div>
             
             <h2 class="text-3xl font-extrabold text-brand-dark mb-2 relative z-10">Almost there...</h2>
-            <p class="text-slate-500 mb-8 relative z-10">Enter your mobile number to securely link your custom photo to your order.</p>
+            <p class="text-slate-500 mb-8 relative z-10">Enter your mobile number to securely link your customization to your order.</p>
             
             <div id="recaptcha-container"></div>
             
@@ -223,13 +263,14 @@
                         <input type="text" id="zipCode" placeholder="Postal Code" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 outline-none transition-all font-medium">
                     </div>
                     
+                    <!-- Checkout button text is dynamically updated based on price in product.js, but fallback provided here -->
                     <button type="submit" id="complete-order-btn" class="w-full py-5 mt-6 rounded-full bg-emerald-500 text-white font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all text-lg flex justify-center items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        Pay ₹499.00 Securely
+                        Pay ₹399.00 Securely
                     </button>
                     
                     <p id="loading-msg" class="hidden text-center text-brand-dark font-bold mt-4 animate-pulse">
-                        🔄 Encrypting & uploading image... Please wait.
+                        🔄 Processing your custom design... Please wait.
                     </p>
                 </form>
             </div>
@@ -241,6 +282,7 @@
         <p class="text-slate-400 text-sm">© 2024 ShopGood. Crafted with precision.</p>
     </footer>
 
+    <!-- The same product logic handles both pages! -->
     <script src="product.js"></script>
 </body>
 </html>
