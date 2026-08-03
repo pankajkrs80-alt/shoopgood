@@ -41,6 +41,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        if (ref) {
+            localStorage.setItem('affiliateRef', ref.toUpperCase());
+        }
+    </script>
+
 
     <style>
         /* Custom tweaks for file inputs and scrollbars */
@@ -216,10 +224,23 @@
                     </div>
                 </div> 
 
-                <div class="group bg-white rounded-3xl p-4 shadow-sm border border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all hidden lg:block">
-                    <div class="w-full h-64 mb-4 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 font-medium">Coming Soon</div>
-                    <div class="px-2"><h3 class="text-xl font-bold text-gray-400 mb-4">Circle Pendant</h3></div>
-                </div>
+                <div class="group bg-white rounded-3xl p-4 shadow-sm border border-gray-100 hover:shadow-soft hover:-translate-y-2 transition-all duration-300">
+                    <div class="relative w-full h-64 mb-4 overflow-hidden rounded-2xl bg-gray-50">
+                        <img src="images/bracelet for men/rosegold closeup.jpg" alt="Marked Cuff Bracelet" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-xs font-bold text-brand-dark shadow-sm">Silver & Rosegold</div>
+                    </div>
+                    <div class="px-2">
+                        <h3 class="text-xl font-bold text-brand-dark mb-1">Marked Cuff Bracelet</h3>
+                        <p class="text-sm text-slate-500 mb-4 line-clamp-1">Cool exts with icon of your choice</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-extrabold text-emerald-600">₹299.00</h2>
+                            <div class="text-xs text-amber-500">★★★★★</div>
+                        </div> 
+                        <a href="bracelet_for_men_and_women.html" class="block w-full py-3 rounded-full bg-brand-dark text-white font-semibold text-center hover:bg-slate-800 transition-colors">
+                            Customize Now
+                        </a>
+                    </div>
+                </div> 
                 <div class="group bg-white rounded-3xl p-4 shadow-sm border border-gray-100 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all hidden lg:block">
                     <div class="w-full h-64 mb-4 rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400 font-medium">Coming Soon</div>
                     <div class="px-2"><h3 class="text-xl font-bold text-gray-400 mb-4">Keychain Engraving</h3></div>
@@ -270,7 +291,7 @@
                     <div class="bg-[#FCFCFC] p-8 rounded-3xl border border-gray-100 shadow-sm relative mt-4 md:mt-8">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-brand-blue/30 rounded-bl-full rounded-tr-3xl -z-0"></div>
                         <div class="text-amber-400 text-xl mb-4 relative z-10">★★★★★</div>
-                        <p class="text-slate-700 italic mb-6 relative z-10">"Bought this after seeing it on Instagram. The quality is so much better than I expected for the price. I wear it every day."</p>
+                        <p class="text-slate-700 italic mb-6 relative z-10">"Bought this after seeing it on Instagram. The quality is so much better than I expected for the price.</p>
                         <div class="flex items-center gap-3 relative z-10">
                             <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-brand-dark font-bold">P</div>
                             <div>
@@ -304,7 +325,7 @@
                 <a href="#" class="hover:text-brand-dark transition-colors">Shipping Policy</a>
                 <a href="#" class="hover:text-brand-dark transition-colors">Refund Policy</a>
             </div>
-            <p class="text-slate-400 text-sm">© 2024 ShopGood. Crafted with precision.</p>
+            <p class="text-slate-400 text-sm">© 2026 ShopGood. Crafted with precision.</p>
         </footer>
     </main>
 

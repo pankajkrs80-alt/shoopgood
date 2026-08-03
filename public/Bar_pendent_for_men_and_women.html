@@ -40,6 +40,14 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        if (ref) {
+            localStorage.setItem('affiliateRef', ref.toUpperCase());
+        }
+    </script>
+
 
     <style>
         /* Custom tweaks for file inputs and scrollbars */
