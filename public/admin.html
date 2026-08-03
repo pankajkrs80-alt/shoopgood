@@ -120,6 +120,28 @@
                 </div>
             </div>
         </div>
+
+        <!-- Affiliate Leaderboard Section -->
+        <div class="mt-8 bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="text-xl font-bold text-brand-dark">Affiliate Leaderboard (All-Time)</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white border-b border-gray-100 text-xs uppercase tracking-wider text-slate-500">
+                            <th class="p-4 font-bold">Rank</th>
+                            <th class="p-4 font-bold">Partner Name & Code</th>
+                            <th class="p-4 font-bold">Total Sales</th>
+                            <th class="p-4 font-bold">Lifetime Commission</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-leaderboard-body" class="text-sm divide-y divide-gray-100">
+                        <tr><td colspan="4" class="p-8 text-center text-slate-400 font-medium">Loading leaderboard...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
     <script>
@@ -167,6 +189,7 @@
                 
                 loadOrders();
                 loadAffiliates();
+                loadLeaderboard();
             } else {
                 loginSection.classList.remove('hidden');
                 dashboardSection.classList.add('hidden');
@@ -328,6 +351,50 @@
                 btnElement.classList.replace('bg-brand-dark', 'bg-red-500');
             }
         };
+
+        // Load Leaderboard Data
+        async function loadLeaderboard() {
+            const tbody = document.getElementById('admin-leaderboard-body');
+            try {
+                const snapshot = await db.collection('affiliates').orderBy('totalSales', 'desc').get();
+                let html = '';
+                let rank = 1;
+
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-slate-400">No affiliates found.</td></tr>';
+                    return;
+                }
+
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    
+                    // Add emojis for top 3
+                    let rankIcon = rank;
+                    if(rank === 1) rankIcon = '🥇';
+                    if(rank === 2) rankIcon = '🥈';
+                    if(rank === 3) rankIcon = '🥉';
+
+                    html += `
+                        <tr class="hover:bg-gray-50 transition-colors group">
+                            <td class="p-4 align-middle font-bold text-lg">${rankIcon}</td>
+                            <td class="p-4 align-middle">
+                                <div class="font-bold text-brand-dark">${data.name || 'Unknown'}</div>
+                                <div class="text-xs font-mono text-slate-400 mt-0.5">${id}</div>
+                            </td>
+                            <td class="p-4 align-middle font-extrabold text-emerald-600 text-lg">${data.totalSales || 0}</td>
+                            <td class="p-4 align-middle font-bold text-brand-dark">₹${data.totalCommission || 0}</td>
+                        </tr>
+                    `;
+                    rank++;
+                });
+                
+                tbody.innerHTML = html;
+            } catch (e) {
+                console.error("Leaderboard error", e);
+                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-red-500 font-bold">Error loading leaderboard.</td></tr>';
+            }
+        }
     </script>
 </body>
 </html>
