@@ -80,8 +80,8 @@ async function loadPartnerData() {
     document.getElementById('stat-pending').innerText = `₹${data.pendingBalance || 0}`;
     document.getElementById('stat-lifetime').innerText = `₹${data.totalCommission || 0}`;
     
-    // Generate Custom Link
-    const baseUrl = window.location.origin + window.location.pathname.replace('partner.html', 'index.html');
+    // Generate Custom Link (FIXED FOR VERCEL)
+    const baseUrl = window.location.origin + '/';
     const referralLink = `${baseUrl}?ref=${affiliateCode}`;
     document.getElementById('ref-link').innerText = referralLink;
 
