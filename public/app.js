@@ -81,7 +81,19 @@ if (myAccountBtn) {
 const sendOtpBtn = document.getElementById('send-otp-btn');
 if (sendOtpBtn) {
     sendOtpBtn.addEventListener('click', () => {
-        const phoneNumber = document.getElementById('phone-number').value;
+        let phoneNumber = document.getElementById('phone-number').value.trim();
+
+// Remove spaces and any non-digit characters
+phoneNumber = phoneNumber.replace(/\D/g, '');
+
+// Validate Indian mobile number
+if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+    alert("Please enter a valid 10-digit mobile number.");
+    return;
+}
+
+// Automatically add +91
+phoneNumber = "+91" + phoneNumber;
         
         // Basic validation
         if(phoneNumber.length < 10) {
