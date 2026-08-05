@@ -1,3 +1,5 @@
+/* global firebase */
+
 // ==========================================
 // 1. INITIALIZE FIREBASE
 // ==========================================
@@ -18,158 +20,159 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 // ==========================================
-// 2. GLOBAL STATE & UI ELEMENTS
+// 2. GLOBAL STATE
 // ==========================================
 let currentUser = null;
 let confirmationResult = null;
 
-// Sections
-const catalogSection = document.getElementById('catalog-section');
-const loginSection = document.getElementById('login-section');
-const accountSection = document.getElementById('account-section');
-const addressSection = document.getElementById('address-section'); 
-
-// Buttons
-const myAccountBtn = document.getElementById('my-account-btn');
-const logoutBtn = document.getElementById('logout-btn');
-const backToShopBtn = document.getElementById('back-to-shop-btn');
-
-// ==========================================
-// 3. AUTH STATE MONITOR
-// ==========================================
+// Monitor Auth State immediately
 auth.onAuthStateChanged((user) => {
     currentUser = user;
 });
 
 // ==========================================
-// 4. MAIN NAVIGATION: "MY ACCOUNT" BUTTON
+// 3. UI ELEMENTS & EVENT LISTENERS
 // ==========================================
-if (myAccountBtn) {
-    myAccountBtn.addEventListener('click', () => {
-        // 1. Hide the storefront
-        if (catalogSection) catalogSection.classList.add('hidden');
-        if (addressSection) addressSection.classList.add('hidden');
+// MUST wait for HTML to load before attaching button clicks
+document.addEventListener("DOMContentLoaded", () => {
 
-        if (currentUser) {
-            // LOGGED IN: Show the Dashboard
-            if (loginSection) loginSection.classList.add('hidden');
-            if (accountSection) {
-                accountSection.classList.remove('hidden');
-                loadAccountData();
-            }
-        } else {
-            // NOT LOGGED IN: Show the Login Screen
-            if (accountSection) accountSection.classList.add('hidden');
-            if (loginSection) loginSection.classList.remove('hidden');
+    // Sections
+    // Note: Ensure your Best Sellers container in HTML has id="catalog-section" or update this ID
+    const catalogSection = document.getElementById('catalog-section'); 
+    const loginSection = document.getElementById('login-section');
+    const accountSection = document.getElementById('account-section');
+    const addressSection = document.getElementById('address-section'); 
 
-            // Setup Recaptcha safely (only once!)
-            if (!window.recaptchaVerifier) {
-                window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-                    'size': 'invisible'
-                });
-            }
-        }
-        
-        // Scroll to top of the page smoothly
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
+    // Buttons
+    const myAccountBtn = document.getElementById('my-account-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const backToShopBtn = document.getElementById('back-to-shop-btn');
+    const sendOtpBtn = document.getElementById('send-otp-btn');
+    const verifyOtpBtn = document.getElementById('verify-otp-btn');
 
-// ==========================================
-// 5. OTP LOGIN FLOW
-// ==========================================
-const sendOtpBtn = document.getElementById('send-otp-btn');
-if (sendOtpBtn) {
-    sendOtpBtn.addEventListener('click', () => {
-        let phoneNumber = document.getElementById('phone-number').value.trim();
+    // ==========================================
+    // 4. MAIN NAVIGATION: "MY ACCOUNT" BUTTON
+    // ==========================================
+    if (myAccountBtn) {
+        myAccountBtn.addEventListener('click', () => {
+            // 1. Hide the storefront
+            if (catalogSection) catalogSection.classList.add('hidden');
+            if (addressSection) addressSection.classList.add('hidden');
 
-// Remove spaces and any non-digit characters
-phoneNumber = phoneNumber.replace(/\D/g, '');
+            if (currentUser) {
+                // LOGGED IN: Show the Dashboard
+                if (loginSection) loginSection.classList.add('hidden');
+                if (accountSection) {
+                    accountSection.classList.remove('hidden');
+                    loadAccountData();
+                }
+            } else {
+                // NOT LOGGED IN: Show the Login Screen
+                if (accountSection) accountSection.classList.add('hidden');
+                if (loginSection) loginSection.classList.remove('hidden');
 
-// Validate Indian mobile number
-if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
-    alert("Please enter a valid 10-digit mobile number.");
-    return;
-}
-
-// Automatically add +91
-phoneNumber = "+91" + phoneNumber;
-        
-        // Basic validation
-        if(phoneNumber.length < 10) {
-            alert("Please enter a valid mobile number.");
-            return;
-        }
-
-        auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
-            .then((result) => {
-                confirmationResult = result;
-                document.getElementById('phone-input-group').classList.add('hidden');
-                document.getElementById('otp-input-group').classList.remove('hidden');
-            }).catch((error) => {
-                console.error("SMS not sent", error);
-                alert("Error sending OTP. Ensure number includes country code (e.g., +91).");
-            });
-    });
-}
-
-const verifyOtpBtn = document.getElementById('verify-otp-btn');
-if (verifyOtpBtn) {
-    verifyOtpBtn.addEventListener('click', () => {
-        const code = document.getElementById('otp-code').value;
-        
-        confirmationResult.confirm(code).then(async (result) => {
-            currentUser = result.user;
-            
-            // Save basic user info if first login
-            try {
-                const userDoc = await db.collection('users').doc(currentUser.uid).get();
-                if (!userDoc.exists) {
-                    await db.collection('users').doc(currentUser.uid).set({
-                        phoneNumber: currentUser.phoneNumber,
-                        lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                // Setup Recaptcha safely (only once!)
+                if (!window.recaptchaVerifier) {
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                        'size': 'invisible'
                     });
                 }
-            } catch(e) {
-                console.error(e);
+            }
+            
+            // Scroll to top of the page smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ==========================================
+    // 5. OTP LOGIN FLOW
+    // ==========================================
+    if (sendOtpBtn) {
+        sendOtpBtn.addEventListener('click', () => {
+            let phoneNumber = document.getElementById('phone-number').value.trim();
+
+            // Remove spaces and any non-digit characters
+            phoneNumber = phoneNumber.replace(/\D/g, '');
+
+            // Validate Indian mobile number
+            if (!/^[6-9]\d{9}$/.test(phoneNumber)) {
+                alert("Please enter a valid 10-digit mobile number.");
+                return;
             }
 
-            // Successfully verified! Move from Login to Dashboard
+            // Automatically add +91
+            phoneNumber = "+91" + phoneNumber;
+
+            auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+                .then((result) => {
+                    confirmationResult = result;
+                    document.getElementById('phone-input-group').classList.add('hidden');
+                    document.getElementById('otp-input-group').classList.remove('hidden');
+                }).catch((error) => {
+                    console.error("SMS not sent", error);
+                    alert("Error sending OTP. Ensure number is correct and try again.");
+                });
+        });
+    }
+
+    if (verifyOtpBtn) {
+        verifyOtpBtn.addEventListener('click', () => {
+            const code = document.getElementById('otp-code').value;
+            
+            confirmationResult.confirm(code).then(async (result) => {
+                currentUser = result.user;
+                
+                // Save basic user info if first login
+                try {
+                    const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                    if (!userDoc.exists) {
+                        await db.collection('users').doc(currentUser.uid).set({
+                            phoneNumber: currentUser.phoneNumber,
+                            lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                        });
+                    }
+                } catch(e) {
+                    console.error("Error saving user document:", e);
+                }
+
+                // Successfully verified! Move from Login to Dashboard
+                if (loginSection) loginSection.classList.add('hidden');
+                if (accountSection) {
+                    accountSection.classList.remove('hidden');
+                    loadAccountData();
+                }
+            }).catch((error) => {
+                console.error("Invalid OTP", error);
+                alert("Invalid OTP code. Please try again.");
+            });
+        });
+    }
+
+    // ==========================================
+    // 6. SUB-NAVIGATION BUTTONS
+    // ==========================================
+    if (backToShopBtn) {
+        backToShopBtn.addEventListener('click', () => {
+            if (accountSection) accountSection.classList.add('hidden');
             if (loginSection) loginSection.classList.add('hidden');
-            if (accountSection) {
-                accountSection.classList.remove('hidden');
-                loadAccountData();
-            }
-        }).catch((error) => {
-            console.error("Invalid OTP", error);
-            alert("Invalid OTP code. Please try again.");
+            if (catalogSection) catalogSection.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-    });
-}
+    }
 
-// ==========================================
-// 6. SUB-NAVIGATION BUTTONS
-// ==========================================
-if (backToShopBtn) {
-    backToShopBtn.addEventListener('click', () => {
-        if (accountSection) accountSection.classList.add('hidden');
-        if (loginSection) loginSection.classList.add('hidden');
-        if (catalogSection) catalogSection.classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
-
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        auth.signOut().then(() => {
-            window.location.href = 'index.html'; 
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                window.location.reload(); // Safer and cleaner than hardcoding URL
+            });
         });
-    });
-}
+    }
+});
 
 // ==========================================
 // 7. LOAD CUSTOMER DASHBOARD DATA
 // ==========================================
+// Kept outside DOMContentLoaded so it can be called globally if needed
 async function loadAccountData() {
     const profileDiv = document.getElementById('profile-details');
     const ordersDiv = document.getElementById('orders-list');
@@ -225,10 +228,10 @@ async function loadAccountData() {
                     <div class="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm mb-4 hover:shadow-soft transition-shadow">
                         <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
                             <strong class="text-brand-dark">Order Date: ${orderDate}</strong>
-                            <span class="px-3 py-1 bg-brand-mint text-brand-dark text-xs font-bold rounded-full uppercase tracking-wide">${order.status}</span>
+                            <span class="px-3 py-1 bg-brand-mint text-brand-dark text-xs font-bold rounded-full uppercase tracking-wide">${order.status || 'Processing'}</span>
                         </div>
                         <p class="text-slate-600 mb-1"><strong class="text-brand-dark">Payment ID:</strong> <span class="font-mono text-sm">${order.paymentId || 'N/A'}</span></p>
-                        <p class="text-slate-600"><strong class="text-brand-dark">Shipping To:</strong> ${order.fullName}, ${order.city}</p>
+                        <p class="text-slate-600"><strong class="text-brand-dark">Shipping To:</strong> ${order.fullName || 'N/A'}, ${order.city || 'N/A'}</p>
                         ${imageLink}
                     </div>
                 `;
