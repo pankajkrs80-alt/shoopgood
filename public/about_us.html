@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | ShopGood</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], },
+                    colors: { brand: { dark: '#0f172a', mint: '#C5F7E2', blue: '#BAE7F6', lavender: '#C9C6F6' } },
+                    boxShadow: { 'soft': '0 20px 40px -15px rgba(0,0,0,0.05)' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#FCFCFC] text-slate-800 antialiased">
+
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="index.html" class="flex items-center hover:opacity-80 transition-opacity">
+                <img src="images/Website Icon Logo 600 by 180.png" alt="ShopGood" class="h-10 sm:h-12 w-auto object-contain">
+            </a>
+            <a href="index.html" class="text-sm font-semibold text-brand-dark hover:text-slate-500 transition-colors">← Back to Shop</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="relative max-w-7xl mx-auto px-6 py-20 lg:py-32 text-center overflow-hidden">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-mint/20 rounded-full blur-3xl -z-10"></div>
+            
+            <h1 class="text-5xl lg:text-7xl font-extrabold text-brand-dark tracking-tight mb-8">
+                Crafting Memories,<br/> One Engraving at a Time.
+            </h1>
+            <p class="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                ShopGood was founded with a simple premise: premium, deeply personalized jewelry shouldn't take weeks to arrive or cost a fortune.
+            </p>
+        </section>
+
+        <!-- Image & Text Block -->
+        <section class="max-w-7xl mx-auto px-6 pb-24">
+            <div class="bg-white rounded-[3rem] p-8 lg:p-16 shadow-soft border border-gray-100 grid lg:grid-cols-2 gap-12 items-center">
+                
+                <div class="w-full h-[400px] rounded-3xl overflow-hidden bg-gray-100">
+                    <img src="https://images.unsplash.com/photo-1616047535198-4e892c55b6bd?auto=format&fit=crop&w=800&q=80" alt="Jewelry Workshop" class="w-full h-full object-cover">
+                </div>
+
+                <div class="space-y-6 text-lg text-slate-600 leading-relaxed">
+                    <h2 class="text-3xl font-bold text-brand-dark mb-4">No Dropshipping. No Middlemen.</h2>
+                    <p>
+                        Most custom jewelry stores outsource their production overseas. This means you wait weeks for your gift to arrive, and the quality is completely out of the store's control. 
+                    </p>
+                    <p>
+                        <strong>We do things differently.</strong> We own our laser-engraving machines and craft every single piece in-house at our Mumbai workshop. By cutting out the middlemen, we ensure flawless HD engraving and guarantee dispatch within 48 hours.
+                    </p>
+                    <div class="pt-6 border-t border-gray-100 flex gap-6">
+                        <div>
+                            <p class="text-3xl font-extrabold text-brand-dark">700+</p>
+                            <p class="text-sm font-medium text-slate-400 uppercase tracking-widest mt-1">5-Star Reviews</p>
+                        </div>
+                        <div>
+                            <p class="text-3xl font-extrabold text-brand-dark">100%</p>
+                            <p class="text-sm font-medium text-slate-400 uppercase tracking-widest mt-1">In-House Made</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white py-12 border-t border-gray-100 text-center">
+        <div class="flex flex-wrap justify-center gap-6 mb-6 text-sm font-medium text-slate-500">
+            <a href="contact.html" class="hover:text-brand-dark transition-colors">Contact Us</a>
+            <a href="policies.html#shipping" class="hover:text-brand-dark transition-colors">Shipping Policy</a>
+            <a href="policies.html#refunds" class="hover:text-brand-dark transition-colors">Refund Policy</a>
+            <a href="policies.html#privacy" class="hover:text-brand-dark transition-colors">Privacy Policy</a>
+            <a href="policies.html#terms" class="hover:text-brand-dark transition-colors">Terms of Service</a>
+        </div>
+        <p class="text-slate-400 text-sm">© 2026 ShopGood. Crafted with precision.</p>
+    </footer>
+
+</body>
+</html>
