@@ -101,38 +101,49 @@ if (typeof firebase === 'undefined') {
     }
 
     // 5. Authentication Logic (OTP)
-    const sendOtpBtn = document.getElementById('send-otp-btn');
-    if (sendOtpBtn) {
-        sendOtpBtn.addEventListener('click', () => {
-            const phoneInputEl = document.getElementById('phone-number');
-            if (!phoneInputEl || !phoneInputEl.value) {
-                alert("Please enter a valid phone number.");
-                return;
-            }
-            const phoneNumber = phoneInputEl.value;
-            
-            // Disable button to prevent double-charges!
-            sendOtpBtn.disabled = true;
-            sendOtpBtn.innerText = "Sending...";
-            sendOtpBtn.classList.add('opacity-50', 'cursor-not-allowed');
+ const sendOtpBtn = document.getElementById('send-otp-btn');
+if (sendOtpBtn) {
+    sendOtpBtn.addEventListener('click', () => {
+        const phoneInputEl = document.getElementById('phone-number');
+        if (!phoneInputEl || !phoneInputEl.value) {
+            alert("Please enter a valid phone number.");
+            return;
+        }
 
-            auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
-                .then((confirmationResult) => {
-                    window.confirmationResult = confirmationResult;
-                    const phoneGroup = document.getElementById('phone-input-group');
-                    const otpGroup = document.getElementById('otp-input-group');
-                    
-                    if (phoneGroup) phoneGroup.classList.add('hidden');
-                    if (otpGroup) otpGroup.classList.remove('hidden');
-                }).catch((error) => {
-                    console.error("SMS not sent", error);
-                    alert("Error sending OTP. Check the format (e.g., +91).");
-                    sendOtpBtn.disabled = false;
-                    sendOtpBtn.innerText = "Send Security Code";
-                    sendOtpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                });
-        });
-    }
+        // Clean the input by removing any accidental spaces
+        const rawNumber = phoneInputEl.value.replace(/\s+/g, '');
+
+        // Validate that the user entered exactly 10 digits
+        if (!/^\d{10}$/.test(rawNumber)) {
+            alert("Please enter a valid 10-digit phone number.");
+            return;
+        }
+
+        // Automatically prepend +91 for Firebase
+        const phoneNumber = '+91' + rawNumber;
+        
+        // Disable button to prevent double-charges!
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.innerText = "Sending...";
+        sendOtpBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+        auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+            .then((confirmationResult) => {
+                window.confirmationResult = confirmationResult;
+                const phoneGroup = document.getElementById('phone-input-group');
+                const otpGroup = document.getElementById('otp-input-group');
+                
+                if (phoneGroup) phoneGroup.classList.add('hidden');
+                if (otpGroup) otpGroup.classList.remove('hidden');
+            }).catch((error) => {
+                console.error("SMS not sent", error);
+                alert("Error sending OTP. Please try again.");
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.innerText = "Send Security Code";
+                sendOtpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+    });
+}
 
     const verifyOtpBtn = document.getElementById('verify-otp-btn');
     if (verifyOtpBtn) {
