@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-sans: 'Inter', sans-serif;
+
+  /* Colors */
+  --color-brand-dark: #0f172a;
+  --color-brand-mint: #C5F7E2;
+  --color-brand-blue: #BAE7F6;
+  --color-brand-lavender: #C9C6F6;
+
+  /* Box Shadows */
+  --shadow-soft: 0 20px 40px -15px rgba(0,0,0,0.05);
+  --shadow-glow: 0 0 40px -10px rgba(197, 247, 226, 0.5);
+}
