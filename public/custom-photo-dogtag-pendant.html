@@ -17,14 +17,14 @@
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-      <script>
+    <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
         if (ref) {
             localStorage.setItem('affiliateRef', ref.toUpperCase());
         }
     </script>
-
 
     <style>
         /* Custom tweaks for file inputs and scrollbars */
@@ -83,7 +83,7 @@
             </a>
             
             <a href="index.html" class="flex items-center hover:opacity-80 transition-opacity">
-                <img src="images/Website Icon Logo 600 by 180.png" alt="Shopgood- Gift Store"class="h-10 sm:h-12 w-auto object-contain">
+                <img src="images/Website Icon Logo 600 by 180.png" alt="Shopgood- Gift Store" class="h-10 sm:h-12 w-auto object-contain">
             </a>
             
             <div class="w-24"></div> <!-- Spacer to keep logo centered -->
@@ -137,8 +137,8 @@
                 </p>
                 
                 <div class="flex items-baseline gap-4 mb-8">
-                    <!-- Added id and data-price (in paise: 49900 = ₹499.00) -->
-                    <h2 id="product-price" data-price="49900" class="text-4xl font-extrabold text-emerald-600">₹299.00</h2>
+                    <!-- Synced price to 29900 = ₹299.00 -->
+                    <h2 id="product-price" data-price="29900" class="text-4xl font-extrabold text-emerald-600">₹299.00</h2>
                     <span class="text-slate-400 line-through font-medium text-lg">₹999.00</span>
                 </div>
                 
@@ -225,7 +225,7 @@
                     
                     <button type="submit" id="complete-order-btn" class="w-full py-5 mt-6 rounded-full bg-emerald-500 text-white font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all text-lg flex justify-center items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        Pay ₹499.00 Securely
+                        Pay ₹299.00 Securely
                     </button>
                     
                     <p id="loading-msg" class="hidden text-center text-brand-dark font-bold mt-4 animate-pulse">
@@ -241,6 +241,7 @@
         <p class="text-slate-400 text-sm">© 2026 ShopGood. Crafted with precision.</p>
     </footer>
 
-    <script src="product.js"></script>
+    <!-- ADDED DEFER HERE SO IT WAITS FOR FIREBASE -->
+    <script defer src="product.js"></script>
 </body>
 </html>

@@ -12,18 +12,20 @@
     
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="output.css">
+    
     <!-- Firebase SDKs -->
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-      <script>
+    <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <script>
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
         if (ref) {
             localStorage.setItem('affiliateRef', ref.toUpperCase());
         }
     </script>
-
 
     <style>
         /* Custom tweaks for file inputs and scrollbars */
@@ -112,8 +114,9 @@
                 <div class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
                     <img src="images/Bar Pendent/Gold Hero.png" alt="Thumb Main" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
                     <img src="images/Bar Pendent/Silver Customisation Options.webp" alt="Thumb 1" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
-                    <img src="images/Bar Pendent/Gold Lifestyle.webp" alt="Thumb 1" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
-                    <img src="images/Bar Pendent/Rosegold Customisation option.webp" alt="Thumb 1" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">                </div>
+                    <img src="images/Bar Pendent/Gold Lifestyle.webp" alt="Thumb 2" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
+                    <img src="images/Bar Pendent/Rosegold Customisation option.webp" alt="Thumb 3" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
+                </div>
             </div>
             
             <!-- Right: Product Info & Upload Form -->
@@ -137,17 +140,20 @@
                 </p>
                 
                 <div class="flex items-baseline gap-4 mb-8">
-                    <!-- Price configured for Bar Necklace (39900 = ₹399.00) -->
-                    <h2 id="product-price" data-price="39900" class="text-4xl font-extrabold text-emerald-600">₹299.00</h2>
+                    <!-- Price synced to 29900 (₹299.00) -->
+                    <h2 id="product-price" data-price="29900" class="text-4xl font-extrabold text-emerald-600">₹299.00</h2>
                     <span class="text-slate-400 line-through font-medium text-lg">₹999.00</span>
                 </div>
-<!-- STEP 2 & 3: Custom Text Engraving -->
+
+                <!-- STEP 2 & 3: Custom Text Engraving -->
                 <div class="mb-6 space-y-4">
                     <div>
                         <label for="front-text" class="block font-bold text-brand-dark mb-2 text-lg">
                             1. Front Text Engraving <span class="text-slate-400 text-sm font-normal">(Max 20 chars)</span>
                         </label>
                         <input type="text" id="front-text" maxlength="20" placeholder="e.g., I Love You, Sarah" class="w-full px-5 py-4 rounded-2xl bg-white border border-gray-200 focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 outline-none transition-all shadow-sm">
+                        <!-- Validation Error element for JS to use -->
+                        <p id="front-error" class="hidden text-red-500 text-sm mt-2 font-medium">⚠️ Please enter the text to be engraved.</p>
                     </div>
                     <div>
                         <label for="back-text" class="block font-bold text-brand-dark mb-2 text-lg">
@@ -247,10 +253,10 @@
                         <input type="text" id="zipCode" placeholder="Postal Code" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 focus:border-brand-dark focus:ring-4 focus:ring-brand-blue/30 outline-none transition-all font-medium">
                     </div>
                     
-                    <!-- Checkout button text is dynamically updated based on price in product.js, but fallback provided here -->
+                    <!-- Checkout button text synced to 299.00 -->
                     <button type="submit" id="complete-order-btn" class="w-full py-5 mt-6 rounded-full bg-emerald-500 text-white font-bold hover:bg-emerald-600 shadow-lg shadow-emerald-500/30 transition-all text-lg flex justify-center items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        Pay ₹399.00 Securely
+                        Pay ₹299.00 Securely
                     </button>
                     
                     <p id="loading-msg" class="hidden text-center text-brand-dark font-bold mt-4 animate-pulse">
@@ -267,6 +273,6 @@
     </footer>
 
     <!-- The same product logic handles both pages! -->
-    <script src="product.js"></script>
+    <script defer src="product.js"></script>
 </body>
 </html>

@@ -17,14 +17,14 @@
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-      <script>
+    <script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
         if (ref) {
             localStorage.setItem('affiliateRef', ref.toUpperCase());
         }
     </script>
-
 
     <style>
         /* Custom tweaks */
@@ -92,7 +92,7 @@
                 <div class="flex gap-4 overflow-x-auto pb-2 hide-scrollbar">
                     <img src="images/bracelet for men/hero.jpg" alt="Thumb Main" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src" onerror="this.src='https://placehold.co/100x100/e2e8f0/64748b?text=1'">
                     <img src="images/bracelet for men/customisation option.webp" alt="Thumb 2" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
-                    <img src="images/bracelet for men/rosegold closeup.webp" alt="Thumb 2" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
+                    <img src="images/bracelet for men/rosegold closeup.webp" alt="Thumb 3" class="thumbnail-img w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-2xl cursor-pointer bg-gray-50 flex-shrink-0" onclick="document.getElementById('active-preview').src=this.src">
                 </div>
             </div>
             
@@ -237,9 +237,10 @@
 
     <!-- Footer -->
     <footer class="bg-white py-12 border-t border-gray-100 text-center mt-20">
-        <p class="text-slate-400 text-sm">© 2024 ShopGood. Crafted with precision.</p>
+        <p class="text-slate-400 text-sm">© 2026 ShopGood. Crafted with precision.</p>
     </footer>
 
-    <script src="product.js"></script>
+    <!-- ADDED DEFER HERE SO IT WAITS FOR FIREBASE -->
+    <script defer src="product.js"></script>
 </body>
 </html>
