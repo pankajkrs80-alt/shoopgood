@@ -348,14 +348,24 @@ if (typeof firebase === 'undefined') {
                         if (braceletSymbolDropdown) orderData.braceletSymbol = braceletSymbolDropdown.value;
                         
 // NEW: Save the selected font if it exists!
+                        // NEW: Save the selected font if it exists!
                         if (selectedFont) orderData.fontStyle = selectedFont;
 
                         try {
                             // 1. Save to Firebase Database
                             await db.collection('orders').add(orderData);
+
+                            // --- NEW: GENERATE SHOPGOOD ORDER ID ---
+                            const today = new Date();
+                            const dd = String(today.getDate()).padStart(2, '0');
+                            const mm = String(today.getMonth() + 1).padStart(2, '0');
+                            const yyyy = today.getFullYear();
+                            const shopGoodOrderId = `91${finalPhone}${dd}${mm}${yyyy}`;
+                            // ---------------------------------------
                             
-                            // 2. Prepare SAFE data for Google Sheets (Removes Firebase Timestamp)
+                            // 2. Prepare SAFE data for Google Sheets
                             const sheetData = {
+                                shopGoodOrderId: shopGoodOrderId, // <--- ADDED HERE
                                 paymentId: paymentId,
                                 fullName: fullName,
                                 phoneNumber: finalPhone,
@@ -373,11 +383,9 @@ if (typeof firebase === 'undefined') {
                             
                             fetch(googleSheetUrl, {
                                 method: 'POST',
-                                // MUST be text/plain to bypass strict browser CORS blocks
                                 headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
                                 body: JSON.stringify(sheetData)
-                            }).then(() => console.log("Sent to Google Sheets!"))
-                              .catch(err => console.error("Sheet Sync Failed:", err));
+                            }).catch(err => console.error("Sheet Sync Failed:", err));
                             
                             // 4. Save User Address Data
                             await db.collection('users').doc(currentUser.uid).set({
