@@ -347,17 +347,29 @@ if (typeof firebase === 'undefined') {
                         if (braceletNameInput && braceletNameInput.value) orderData.braceletName = braceletNameInput.value.trim();
                         if (braceletSymbolDropdown) orderData.braceletSymbol = braceletSymbolDropdown.value;
                         
-                        // NEW: Save the selected font if it exists!
+               // NEW: Save the selected font if it exists!
                         if (selectedFont) orderData.fontStyle = selectedFont;
 
                         try {
+                            // 1. Save to Firebase Database
                             await db.collection('orders').add(orderData);
                             
+                            // 2. Sync live order to Google Sheets
+                            const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyTs1crrIOD2rwvdQu4Uv6oAdW--LNw30ri2gW7_xfLNJBuDhNf1ytcskhboio7EXrw/exec";
+                            fetch(googleSheetUrl, {
+                                method: 'POST',
+                                mode: 'no-cors', // Bypasses cross-origin blocking
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(orderData)
+                            }).catch(err => console.error("Sheet Sync Failed:", err)); // Fails silently
+                            
+                            // 3. Save User Address Data
                             await db.collection('users').doc(currentUser.uid).set({
                                 fullName, streetAddress, city, zipCode,
                                 lastOrderDate: firebase.firestore.FieldValue.serverTimestamp()
                             }, { merge: true });
 
+                            // 4. Update Affiliate Commissions
                             if (affiliateRef !== 'none') {
                                 await db.collection('affiliates').doc(affiliateRef).set({
                                     totalSales: firebase.firestore.FieldValue.increment(1),
@@ -366,7 +378,6 @@ if (typeof firebase === 'undefined') {
                                     lastSaleAt: firebase.firestore.FieldValue.serverTimestamp()
                                 }, { merge: true });
                             }
-
                             // Premium Success Screen
                             if (addressSection) {
                                 addressSection.innerHTML = `
