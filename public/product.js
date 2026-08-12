@@ -347,29 +347,45 @@ if (typeof firebase === 'undefined') {
                         if (braceletNameInput && braceletNameInput.value) orderData.braceletName = braceletNameInput.value.trim();
                         if (braceletSymbolDropdown) orderData.braceletSymbol = braceletSymbolDropdown.value;
                         
-               // NEW: Save the selected font if it exists!
+// NEW: Save the selected font if it exists!
                         if (selectedFont) orderData.fontStyle = selectedFont;
 
                         try {
                             // 1. Save to Firebase Database
                             await db.collection('orders').add(orderData);
                             
-                            // 2. Sync live order to Google Sheets
+                            // 2. Prepare SAFE data for Google Sheets (Removes Firebase Timestamp)
+                            const sheetData = {
+                                paymentId: paymentId,
+                                fullName: fullName,
+                                phoneNumber: finalPhone,
+                                city: city,
+                                productName: productName,
+                                fontStyle: selectedFont || "None",
+                                frontText: frontTextInput ? frontTextInput.value.trim() : "None",
+                                backText: backTextInput ? backTextInput.value.trim() : "None",
+                                customImageUrl: imageUrl || "None",
+                                affiliateCode: affiliateRef !== 'none' ? affiliateRef : "Organic"
+                            };
+
+                            // 3. Sync live order to Google Sheets
                             const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyTs1crrIOD2rwvdQu4Uv6oAdW--LNw30ri2gW7_xfLNJBuDhNf1ytcskhboio7EXrw/exec";
+                            
                             fetch(googleSheetUrl, {
                                 method: 'POST',
-                                mode: 'no-cors', // Bypasses cross-origin blocking
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(orderData)
-                            }).catch(err => console.error("Sheet Sync Failed:", err)); // Fails silently
+                                // MUST be text/plain to bypass strict browser CORS blocks
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                                body: JSON.stringify(sheetData)
+                            }).then(() => console.log("Sent to Google Sheets!"))
+                              .catch(err => console.error("Sheet Sync Failed:", err));
                             
-                            // 3. Save User Address Data
+                            // 4. Save User Address Data
                             await db.collection('users').doc(currentUser.uid).set({
                                 fullName, streetAddress, city, zipCode,
                                 lastOrderDate: firebase.firestore.FieldValue.serverTimestamp()
                             }, { merge: true });
 
-                            // 4. Update Affiliate Commissions
+                            // 5. Update Affiliate Commissions
                             if (affiliateRef !== 'none') {
                                 await db.collection('affiliates').doc(affiliateRef).set({
                                     totalSales: firebase.firestore.FieldValue.increment(1),
