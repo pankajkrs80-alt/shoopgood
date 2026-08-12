@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personalized Jewelry & Custom Gifts | ShopGood</title>
-    <meta name="description" content="Shop premium custom jewelry and personalized gifts. Laser-engraved and dispatched in 24-48 hours. Free shipping & replacements.">
+    <meta name="description" content="Personalize a sleek bar necklace with your own custom text and symbols. Features double-sided laser engraving so you can add meaningful messages to both the front and back.">
     <link rel="canonical" href="https://www.yourwebsite.com/index.html" />
-    
     <!-- PERFORMANCE: Preload the main hero image to dramatically improve Largest Contentful Paint (LCP) -->
     <link rel="preload" href="images/Bar Pendant/Gold Lifestyle.webp" as="image" type="image/webp">
     
@@ -479,48 +478,6 @@
             </div>
         </div>
     </section>
-
-    <!-- IMPROVEMENT 3: Image Zoom Modal HTML & Script -->
-    <div id="imageZoomModal" class="fixed inset-0 z-50 hidden bg-black/90 items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300" onclick="closeImageModal()">
-        <button class="absolute top-6 right-6 text-white p-2 hover:bg-white/20 rounded-full z-50 transition-colors" onclick="closeImageModal()" aria-label="Close modal">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <img id="zoomedImage" src="" class="max-w-full max-h-[90vh] rounded-xl object-contain shadow-2xl scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
-    </div>
-
-    <script>
-        // Zoom Modal Script for Chat Screenshots
-        const modal = document.getElementById('imageZoomModal');
-        const zoomedImg = document.getElementById('zoomedImage');
-
-        function openImageModal(imageSrc) {
-            zoomedImg.src = imageSrc;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            // Trigger animation frame for smooth fade-in
-            requestAnimationFrame(() => {
-                modal.classList.remove('opacity-0');
-                zoomedImg.classList.remove('scale-95');
-                zoomedImg.classList.add('scale-100');
-            });
-            
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
-        }
-
-        function closeImageModal() {
-            modal.classList.add('opacity-0');
-            zoomedImg.classList.remove('scale-100');
-            zoomedImg.classList.add('scale-95');
-            
-            // Wait for transition before hiding
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = 'auto';
-            }, 300);
-        }
-    </script>
 
     <!-- Core App Logic -->
     <script defer src="app.js"></script>

@@ -1,3 +1,47 @@
+// ==========================================
+// 8. DYNAMIC FONT PREVIEW & SELECTION UI
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const fontRadios = document.querySelectorAll('input[name="font_choice"]');
+    const frontTextInput = document.getElementById('front-text');
+    const backTextInput = document.getElementById('back-text');
+    const fontCards = document.querySelectorAll('.font-card'); 
+
+    if (fontRadios.length > 0) {
+        fontRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                
+                // 1. UPDATE THE VISUAL BORDERS ON THE CARDS
+                fontCards.forEach(card => {
+                    // Reset all cards to gray/inactive
+                    card.classList.remove('border-brand-dark', 'bg-slate-50', 'text-brand-dark', 'shadow-md');
+                    card.classList.add('border-gray-200', 'bg-white', 'text-slate-400');
+                });
+
+                // Find the specific card that was just clicked and make it dark/active
+                const activeCard = radio.closest('.font-card');
+                if (activeCard) {
+                    activeCard.classList.remove('border-gray-200', 'bg-white', 'text-slate-400');
+                    activeCard.classList.add('border-brand-dark', 'bg-slate-50', 'text-brand-dark', 'shadow-md');
+                }
+
+                // 2. UPDATE THE TEXT PREVIEW FONT
+                const selectedFont = e.target.value;
+                let fontFamilyStyle = "'Inter', sans-serif"; // Modern (Default)
+
+                if (selectedFont === 'classic') {
+                    fontFamilyStyle = "'Playfair Display', serif";
+                } else if (selectedFont === 'script') {
+                    fontFamilyStyle = "'Dancing Script', cursive";
+                }
+
+                // Apply to input boxes
+                if (frontTextInput) frontTextInput.style.fontFamily = fontFamilyStyle;
+                if (backTextInput) backTextInput.style.fontFamily = fontFamilyStyle;
+            });
+        });
+    }
+});
 // 1. Initialize Firebase Safely
 if (typeof firebase === 'undefined') {
     console.error("Firebase SDK is missing. Please ensure Firebase scripts are included in your HTML.");
@@ -101,49 +145,49 @@ if (typeof firebase === 'undefined') {
     }
 
     // 5. Authentication Logic (OTP)
- const sendOtpBtn = document.getElementById('send-otp-btn');
-if (sendOtpBtn) {
-    sendOtpBtn.addEventListener('click', () => {
-        const phoneInputEl = document.getElementById('phone-number');
-        if (!phoneInputEl || !phoneInputEl.value) {
-            alert("Please enter a valid phone number.");
-            return;
-        }
+    const sendOtpBtn = document.getElementById('send-otp-btn');
+    if (sendOtpBtn) {
+        sendOtpBtn.addEventListener('click', () => {
+            const phoneInputEl = document.getElementById('phone-number');
+            if (!phoneInputEl || !phoneInputEl.value) {
+                alert("Please enter a valid phone number.");
+                return;
+            }
 
-        // Clean the input by removing any accidental spaces
-        const rawNumber = phoneInputEl.value.replace(/\s+/g, '');
+            // Clean the input by removing any accidental spaces
+            const rawNumber = phoneInputEl.value.replace(/\s+/g, '');
 
-        // Validate that the user entered exactly 10 digits
-        if (!/^\d{10}$/.test(rawNumber)) {
-            alert("Please enter a valid 10-digit phone number.");
-            return;
-        }
+            // Validate that the user entered exactly 10 digits
+            if (!/^\d{10}$/.test(rawNumber)) {
+                alert("Please enter a valid 10-digit phone number.");
+                return;
+            }
 
-        // Automatically prepend +91 for Firebase
-        const phoneNumber = '+91' + rawNumber;
-        
-        // Disable button to prevent double-charges!
-        sendOtpBtn.disabled = true;
-        sendOtpBtn.innerText = "Sending...";
-        sendOtpBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            // Automatically prepend +91 for Firebase
+            const phoneNumber = '+91' + rawNumber;
+            
+            // Disable button to prevent double-charges!
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.innerText = "Sending...";
+            sendOtpBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-        auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
-            .then((confirmationResult) => {
-                window.confirmationResult = confirmationResult;
-                const phoneGroup = document.getElementById('phone-input-group');
-                const otpGroup = document.getElementById('otp-input-group');
-                
-                if (phoneGroup) phoneGroup.classList.add('hidden');
-                if (otpGroup) otpGroup.classList.remove('hidden');
-            }).catch((error) => {
-                console.error("SMS not sent", error);
-                alert("Error sending OTP. Please try again.");
-                sendOtpBtn.disabled = false;
-                sendOtpBtn.innerText = "Send Security Code";
-                sendOtpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            });
-    });
-}
+            auth.signInWithPhoneNumber(phoneNumber, window.recaptchaVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    const phoneGroup = document.getElementById('phone-input-group');
+                    const otpGroup = document.getElementById('otp-input-group');
+                    
+                    if (phoneGroup) phoneGroup.classList.add('hidden');
+                    if (otpGroup) otpGroup.classList.remove('hidden');
+                }).catch((error) => {
+                    console.error("SMS not sent", error);
+                    alert("Error sending OTP. Please try again.");
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.innerText = "Send Security Code";
+                    sendOtpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                });
+        });
+    }
 
     const verifyOtpBtn = document.getElementById('verify-otp-btn');
     if (verifyOtpBtn) {
@@ -228,6 +272,11 @@ if (sendOtpBtn) {
             const titleElement = document.getElementById('product-title');
             const productName = titleElement ? titleElement.innerText : "Custom Jewelry";
 
+            // --- NEW: Capture Font Safely ---
+            const fontInput = document.querySelector('input[name="font_choice"]:checked');
+            const selectedFont = fontInput ? fontInput.value : null;
+            // --------------------------------
+
             try {
                 let imageUrl = null;
 
@@ -297,6 +346,9 @@ if (sendOtpBtn) {
                         // Add Cuff Bracelet fields if present
                         if (braceletNameInput && braceletNameInput.value) orderData.braceletName = braceletNameInput.value.trim();
                         if (braceletSymbolDropdown) orderData.braceletSymbol = braceletSymbolDropdown.value;
+                        
+                        // NEW: Save the selected font if it exists!
+                        if (selectedFont) orderData.fontStyle = selectedFont;
 
                         try {
                             await db.collection('orders').add(orderData);
