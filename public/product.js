@@ -321,8 +321,17 @@ if (typeof firebase === 'undefined') {
                     "handler": async (response) => { 
                         const paymentId = response.razorpay_payment_id;
 
+                        // --- 1. GENERATE SHOPGOOD ORDER ID FIRST ---
+                        const today = new Date();
+                        const dd = String(today.getDate()).padStart(2, '0');
+                        const mm = String(today.getMonth() + 1).padStart(2, '0');
+                        const yyyy = today.getFullYear();
+                        const shopGoodOrderId = `91${finalPhone}${dd}${mm}${yyyy}`;
+                        // ---------------------------------------
+
                         // D. Save Order to Database
                         const orderData = {
+                            shopGoodOrderId: shopGoodOrderId, // <--- NOW INCLUDED FOR FIREBASE
                             userId: currentUser.uid,
                             phoneNumber: currentUser.phoneNumber,
                             fullName: fullName,
@@ -347,25 +356,16 @@ if (typeof firebase === 'undefined') {
                         if (braceletNameInput && braceletNameInput.value) orderData.braceletName = braceletNameInput.value.trim();
                         if (braceletSymbolDropdown) orderData.braceletSymbol = braceletSymbolDropdown.value;
                         
-// NEW: Save the selected font if it exists!
                         // NEW: Save the selected font if it exists!
                         if (selectedFont) orderData.fontStyle = selectedFont;
 
                         try {
-                            // 1. Save to Firebase Database
+                            // 2. Save to Firebase Database
                             await db.collection('orders').add(orderData);
-
-                            // --- NEW: GENERATE SHOPGOOD ORDER ID ---
-                            const today = new Date();
-                            const dd = String(today.getDate()).padStart(2, '0');
-                            const mm = String(today.getMonth() + 1).padStart(2, '0');
-                            const yyyy = today.getFullYear();
-                            const shopGoodOrderId = `91${finalPhone}${dd}${mm}${yyyy}`;
-                            // ---------------------------------------
                             
-                            // 2. Prepare SAFE data for Google Sheets
+                            // 3. Prepare SAFE data for Google Sheets
                             const sheetData = {
-                                shopGoodOrderId: shopGoodOrderId, // <--- ADDED HERE
+                                shopGoodOrderId: shopGoodOrderId, 
                                 paymentId: paymentId,
                                 fullName: fullName,
                                 phoneNumber: finalPhone,
@@ -378,7 +378,7 @@ if (typeof firebase === 'undefined') {
                                 affiliateCode: affiliateRef !== 'none' ? affiliateRef : "Organic"
                             };
 
-                            // 3. Sync live order to Google Sheets
+                            // 4. Sync live order to Google Sheets
                             const googleSheetUrl = "https://script.google.com/macros/s/AKfycbyTs1crrIOD2rwvdQu4Uv6oAdW--LNw30ri2gW7_xfLNJBuDhNf1ytcskhboio7EXrw/exec";
                             
                             fetch(googleSheetUrl, {
@@ -387,13 +387,13 @@ if (typeof firebase === 'undefined') {
                                 body: JSON.stringify(sheetData)
                             }).catch(err => console.error("Sheet Sync Failed:", err));
                             
-                            // 4. Save User Address Data
+                            // 5. Save User Address Data
                             await db.collection('users').doc(currentUser.uid).set({
                                 fullName, streetAddress, city, zipCode,
                                 lastOrderDate: firebase.firestore.FieldValue.serverTimestamp()
                             }, { merge: true });
 
-                            // 5. Update Affiliate Commissions
+                            // 6. Update Affiliate Commissions
                             if (affiliateRef !== 'none') {
                                 await db.collection('affiliates').doc(affiliateRef).set({
                                     totalSales: firebase.firestore.FieldValue.increment(1),
@@ -402,6 +402,7 @@ if (typeof firebase === 'undefined') {
                                     lastSaleAt: firebase.firestore.FieldValue.serverTimestamp()
                                 }, { merge: true });
                             }
+                            
                             // Premium Success Screen
                             if (addressSection) {
                                 addressSection.innerHTML = `
