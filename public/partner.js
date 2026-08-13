@@ -7,141 +7,168 @@ const firebaseConfig = {
     appId: "1:990509179696:web:690f44a01bbb71b56edef5"
 };
 
+// Initialize Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-const auth = firebase.auth();
 const db = firebase.firestore();
 
-let currentUser = null;
-if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { 'size': 'invisible' });
-}
-
+// UI Elements
 const loginSection = document.getElementById('login-section');
 const dashboardSection = document.getElementById('dashboard-section');
+const loginForm = document.getElementById('partner-login-form');
+const logoutBtn = document.getElementById('logout-btn');
 
-document.getElementById('send-otp-btn').addEventListener('click', () => {
-    const phone = document.getElementById('partner-phone').value;
-    const btn = document.getElementById('send-otp-btn');
-    btn.disabled = true; btn.innerText = "Sending...";
-    
-    auth.signInWithPhoneNumber(phone, window.recaptchaVerifier).then((result) => {
-        window.confirmationResult = result;
-        document.getElementById('phone-input-group').classList.add('hidden');
-        document.getElementById('otp-input-group').classList.remove('hidden');
-    }).catch((error) => {
-        alert("Error sending OTP. Ensure format is +919876543210");
-        btn.disabled = false; btn.innerText = "Send OTP";
-    });
-});
-
-document.getElementById('verify-otp-btn').addEventListener('click', () => {
-    const code = document.getElementById('otp-code').value;
-    window.confirmationResult.confirm(code).then((result) => {
-        // Success
-    }).catch(() => alert("Invalid OTP"));
-});
-
-document.getElementById('logout-btn').addEventListener('click', () => {
-    auth.signOut().then(() => window.location.reload());
-});
-
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        currentUser = user;
-        loginSection.classList.add('hidden');
-        dashboardSection.classList.remove('hidden');
-        loadPartnerData();
-        loadLeaderboard();
+// 1. Check if partner is already logged in on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const activePartner = localStorage.getItem('shopGoodPartnerId');
+    if (activePartner) {
+        loadDashboard(activePartner);
     } else {
         loginSection.classList.remove('hidden');
         dashboardSection.classList.add('hidden');
     }
 });
 
-async function loadPartnerData() {
-    // 1. Find the affiliate document using their phone number
-    const query = await db.collection('affiliates').where('phoneNumber', '==', currentUser.phoneNumber).get();
+// 2. Handle Login Submission
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     
-    if (query.empty) {
-        alert("No partner account found for this number. Contact Admin to create your account.");
-        auth.signOut();
-        return;
+    const btn = document.getElementById('login-btn');
+    const originalBtnHTML = btn.innerHTML;
+    btn.innerHTML = 'Authenticating...';
+    btn.disabled = true;
+
+    const username = document.getElementById('partner-username').value.trim();
+    const pin = document.getElementById('partner-password').value.trim();
+
+    try {
+        // Search Firestore for a matching username and pin
+        const querySnapshot = await db.collection('affiliates')
+            .where('username', '==', username)
+            .where('pin', '==', pin)
+            .get();
+
+        if (querySnapshot.empty) {
+            alert("Invalid Username or Security Pin. Please try again.");
+            btn.innerHTML = originalBtnHTML;
+            btn.disabled = false;
+            return;
+        }
+
+        // Success! Save their ID to local storage so they stay logged in
+        const partnerDoc = querySnapshot.docs[0];
+        localStorage.setItem('shopGoodPartnerId', partnerDoc.id);
+        
+        loadDashboard(partnerDoc.id);
+
+    } catch (error) {
+        console.error("Login Error:", error);
+        alert("Connection error. Please check your internet and try again.");
+        btn.innerHTML = originalBtnHTML;
+        btn.disabled = false;
     }
+});
 
-    const affiliateDoc = query.docs[0];
-    const data = affiliateDoc.data();
-    const affiliateCode = affiliateDoc.id; // Their code is the Document ID (e.g., PRIYA)
+// 3. Handle Logout
+logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('shopGoodPartnerId');
+    window.location.reload(); // Refreshes page to show login screen
+});
 
-    // 2. Populate UI
-    document.getElementById('partner-name').innerText = `Welcome, ${data.name}!`;
-    document.getElementById('stat-sales').innerText = data.totalSales || 0;
-    document.getElementById('stat-pending').innerText = `₹${data.pendingBalance || 0}`;
-    document.getElementById('stat-lifetime').innerText = `₹${data.totalCommission || 0}`;
-    
-    // Generate Custom Link (FIXED FOR VERCEL)
-    const baseUrl = window.location.origin + '/';
-    const referralLink = `${baseUrl}?ref=${affiliateCode}`;
-    document.getElementById('ref-link').innerText = referralLink;
+// 4. Load Dashboard Data
+async function loadDashboard(partnerId) {
+    loginSection.classList.add('hidden');
+    dashboardSection.classList.remove('hidden');
 
-    // 3. Setup Copy Button
-    document.getElementById('copy-btn').addEventListener('click', (e) => {
-        // Use legacy copy for max compatibility in standard iframes/mobile
+    try {
+        const docRef = await db.collection('affiliates').doc(partnerId).get();
+        if (!docRef.exists) {
+            localStorage.removeItem('shopGoodPartnerId');
+            window.location.reload();
+            return;
+        }
+
+        const data = docRef.data();
+
+        // Populate Text Elements
+        document.getElementById('partner-name').innerText = `Welcome back, ${data.name}!`;
+        document.getElementById('stat-sales').innerText = data.totalSales || 0;
+        document.getElementById('stat-pending').innerText = `₹${data.pendingBalance || 0}`;
+        document.getElementById('stat-lifetime').innerText = `₹${data.totalCommission || 0}`;
+        
+        // Populate Links & Promo Code (Assuming Document ID is the Promo Code)
+        const baseUrl = window.location.origin + '/';
+        const referralLink = `${baseUrl}?ref=${partnerId}`;
+        
+        document.getElementById('ref-link').innerText = referralLink;
+        document.getElementById('promo-code').innerText = partnerId;
+
+        // Copy Button Listeners
+        document.getElementById('copy-link-btn').onclick = (e) => copyToClipboard(referralLink, e.target);
+        document.getElementById('copy-code-btn').onclick = (e) => copyToClipboard(partnerId, e.target);
+
+        // Load Leaderboard
+        loadLeaderboard();
+
+    } catch (error) {
+        console.error("Dashboard Load Error:", error);
+    }
+}
+
+// 5. Copy to Clipboard Utility
+function copyToClipboard(text, btnElement) {
+    const originalText = btnElement.innerText;
+    const originalClasses = btnElement.className;
+
+    navigator.clipboard.writeText(text).then(() => {
+        btnElement.innerText = "Copied!";
+        btnElement.className = "bg-emerald-500 text-white px-4 py-2 rounded-lg font-bold text-sm flex-shrink-0 transition-colors";
+        
+        setTimeout(() => {
+            btnElement.innerText = originalText;
+            btnElement.className = originalClasses;
+        }, 2000);
+    }).catch(err => {
+        // Fallback for older mobile browsers
         const textArea = document.createElement("textarea");
-        textArea.value = referralLink;
+        textArea.value = text;
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand("copy");
         textArea.remove();
-        
-        e.target.innerText = "Copied!";
-        e.target.classList.add("bg-white", "text-brand-dark");
-        setTimeout(() => { 
-            e.target.innerText = "Copy"; 
-            e.target.classList.remove("bg-white", "text-brand-dark");
-        }, 2000);
+        btnElement.innerText = "Copied!";
+        setTimeout(() => { btnElement.innerText = originalText; }, 2000);
     });
-
-    // 4. Calculate Next Payout Date (15th or 30th)
-    const today = new Date();
-    let nextPayout = new Date();
-    if (today.getDate() <= 15) {
-        nextPayout.setDate(15);
-    } else {
-        // Last day of the current month
-        nextPayout = new Date(today.getFullYear(), today.getMonth() + 1, 0); 
-    }
-    const dateOptions = { month: 'short', day: 'numeric' };
-    document.getElementById('next-payout-text').innerText = `Next Payout: ${nextPayout.toLocaleDateString(undefined, dateOptions)}`;
 }
 
+// 6. Load Leaderboard
 async function loadLeaderboard() {
     const leaderboardBody = document.getElementById('leaderboard-body');
-    leaderboardBody.innerHTML = '<tr><td colspan="3" class="py-4 text-center text-slate-400">Loading ranks...</td></tr>';
     
     try {
-        // Fetch top 5 affiliates by total sales
         const snapshot = await db.collection('affiliates')
-                                 .orderBy('totalSales', 'desc')
-                                 .limit(5)
-                                 .get();
+            .orderBy('totalSales', 'desc')
+            .limit(5)
+            .get();
         
         let html = '';
         let rank = 1;
+        
         snapshot.forEach(doc => {
             const data = doc.data();
+            
             // Emojis for top 3
-            let rankIcon = rank;
-            if(rank === 1) rankIcon = '🥇';
-            if(rank === 2) rankIcon = '🥈';
-            if(rank === 3) rankIcon = '🥉';
+            let rankIcon = `<span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-500">${rank}</span>`;
+            if(rank === 1) rankIcon = '<span class="text-2xl" title="1st">🥇</span>';
+            if(rank === 2) rankIcon = '<span class="text-2xl" title="2nd">🥈</span>';
+            if(rank === 3) rankIcon = '<span class="text-2xl" title="3rd">🥉</span>';
 
             html += `
-                <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
-                    <td class="py-4 font-bold ${rank <= 3 ? 'text-lg' : 'text-slate-500'}">${rankIcon}</td>
-                    <td class="py-4 font-bold text-brand-dark">${data.name}</td>
-                    <td class="py-4 text-right font-extrabold text-emerald-600">${data.totalSales || 0}</td>
+                <tr class="border-b border-gray-50 hover:bg-slate-50/50 transition-colors">
+                    <td class="py-4 pl-2 align-middle w-16">${rankIcon}</td>
+                    <td class="py-4 align-middle font-bold text-brand-dark">${data.name}</td>
+                    <td class="py-4 pr-2 align-middle text-right font-extrabold text-emerald-500">${data.totalSales || 0}</td>
                 </tr>
             `;
             rank++;
@@ -150,6 +177,6 @@ async function loadLeaderboard() {
         leaderboardBody.innerHTML = html;
     } catch (e) {
         console.error("Leaderboard error:", e);
-        leaderboardBody.innerHTML = '<tr><td colspan="3" class="py-4 text-center text-red-500">Could not load leaderboard</td></tr>';
+        leaderboardBody.innerHTML = '<tr><td colspan="3" class="py-4 text-center text-red-500 font-medium">Could not load rankings</td></tr>';
     }
 }

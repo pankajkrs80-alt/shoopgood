@@ -1,127 +1,215 @@
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partner Portal | ShopGood</title>
+    <title>Creator Hub | ShopGood</title>
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="output.css">
     
     <!-- Firebase SDKs -->
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-      <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const ref = urlParams.get('ref');
-        if (ref) {
-            localStorage.setItem('affiliateRef', ref.toUpperCase());
-        }
-    </script>
-
 </head>
-<body class="bg-[#FCFCFC] text-slate-800 antialiased">
+<body class="bg-[#FCFCFC] text-slate-800 antialiased selection:bg-brand-mint selection:text-brand-dark">
 
     <!-- Header -->
-    <header class="bg-white border-b border-gray-100">
-        <div class="max-w-5xl mx-auto px-6 h-20 flex justify-between items-center">
-            <img src="images/Website Icon Logo 600 by 180.png" alt="ShopGood" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/600x180/e2e8f0/64748b?text=ShopGood'">
-            <div class="text-sm font-bold text-slate-400 uppercase tracking-widest">Partner Dashboard</div>
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="index.html">
+                <img src="images/Website Icon Logo 600 by 180.png" alt="ShopGood" class="h-10 w-auto object-contain" onerror="this.src='https://placehold.co/600x180/e2e8f0/64748b?text=ShopGood'">
+            </a>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-brand-mint animate-pulse"></span>
+                <span class="text-sm font-bold text-slate-400 uppercase tracking-widest">Creator Hub</span>
+            </div>
         </div>
     </header>
 
-    <!-- SECTION: Login -->
-    <section id="login-section" class="min-h-[70vh] flex items-center justify-center p-6">
-        <div class="w-full max-w-md bg-white rounded-[2rem] p-10 shadow-soft border border-gray-100 text-center">
-            <h2 class="text-3xl font-extrabold text-brand-dark mb-2">Partner Login</h2>
-            <p class="text-slate-500 mb-8">Enter your registered mobile number to access your earnings.</p>
-            
-            <div id="recaptcha-container"></div>
-            
-            <div id="phone-input-group">
-                <input type="tel" id="partner-phone" placeholder="Enter Your 10 Digits Number" class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 outline-none mb-4 text-center text-lg font-medium tracking-wide">
-                <button id="send-otp-btn" class="w-full py-4 rounded-full bg-brand-dark text-white font-bold hover:bg-slate-800 transition-colors text-lg">Send OTP</button>
+    <!-- SECTION 1: VIP Login -->
+    <section id="login-section" class="min-h-[80vh] flex items-center justify-center p-6 relative overflow-hidden">
+        <!-- Decorative Elements -->
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-brand-mint/30 rounded-full blur-3xl pointer-events-none -z-10"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-brand-blue/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+        <div class="w-full max-w-md bg-white rounded-[2rem] p-10 shadow-soft border border-gray-100 text-center relative z-10">
+            <div class="w-16 h-16 mx-auto bg-brand-dark text-brand-mint rounded-2xl flex items-center justify-center mb-6 shadow-md rotate-3">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path></svg>
             </div>
             
-            <div id="otp-input-group" class="hidden">
-                <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 outline-none mb-4 text-center text-2xl font-bold tracking-[0.5em]">
-                <button id="verify-otp-btn" class="w-full py-4 rounded-full bg-emerald-500 text-white font-bold text-lg hover:bg-emerald-600 shadow-lg shadow-emerald-500/30">Verify & Login</button>
-            </div>
+            <h2 class="text-3xl font-extrabold text-brand-dark mb-2">Partner Access</h2>
+            <p class="text-slate-500 mb-8 font-medium">Log in to view your live referrals and earnings.</p>
+            
+            <form id="partner-login-form" class="space-y-4">
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 pl-2">Partner Username</label>
+                    <input type="text" id="partner-username" placeholder="e.g., creator_sarah" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 outline-none focus:ring-4 focus:ring-brand-blue/30 focus:border-brand-dark transition-all text-brand-dark font-medium">
+                </div>
+                
+                <div class="text-left pb-4">
+                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 pl-2">Security Pin</label>
+                    <input type="password" id="partner-password" placeholder="••••••••" required class="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-200 outline-none focus:ring-4 focus:ring-brand-blue/30 focus:border-brand-dark transition-all text-brand-dark font-bold tracking-widest">
+                </div>
+                
+                <button type="submit" id="login-btn" class="w-full py-4 rounded-2xl bg-brand-dark text-white font-bold text-lg hover:bg-slate-800 shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
+                    Enter Dashboard
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </form>
         </div>
     </section>
 
-    <!-- SECTION: Dashboard -->
-    <section id="dashboard-section" class="hidden max-w-5xl mx-auto px-6 py-12">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-brand-dark" id="partner-name">Welcome, Partner!</h1>
-                <p class="text-slate-500">Here are your live statistics.</p>
+    <!-- SECTION 2: Live Dashboard -->
+    <section id="dashboard-section" class="hidden max-w-6xl mx-auto px-6 py-12">
+        
+        <!-- Profile Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-6 bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+            <div class="flex items-center gap-5">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-brand-blue to-brand-mint p-1 shadow-md">
+                    <div class="w-full h-full bg-white rounded-full flex items-center justify-center text-2xl">
+                        ✨
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <h1 class="text-2xl font-extrabold text-brand-dark" id="partner-name">Welcome back!</h1>
+                        <span class="bg-amber-100 text-amber-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-widest">VIP Partner</span>
+                    </div>
+                    <p class="text-slate-500 text-sm font-medium">Your audience loves your recommendations.</p>
+                </div>
             </div>
-            <button id="logout-btn" class="px-5 py-2 rounded-full border border-gray-200 text-slate-500 font-semibold hover:bg-gray-50">Logout</button>
+            <button id="logout-btn" class="px-5 py-2.5 rounded-xl border-2 border-gray-100 text-slate-500 font-bold hover:bg-gray-50 hover:text-brand-dark transition-colors text-sm">Sign Out</button>
         </div>
 
-        <!-- Custom Link Box -->
-        <div class="bg-brand-dark text-white rounded-3xl p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-soft">
-            <div>
-                <span class="text-brand-mint text-xs font-bold uppercase tracking-widest mb-1 block">Your Custom Referral Link</span>
-                <p class="text-sm sm:text-base text-slate-300">Share this link. Anyone who buys using it earns you ₹75!</p>
+        <!-- Referral Tools Grid -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-10">
+            <!-- Tracking Link -->
+            <div class="bg-brand-dark text-white rounded-[2rem] p-8 shadow-soft flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
+                
+                <div class="relative z-10 mb-6">
+                    <span class="text-brand-mint text-xs font-bold uppercase tracking-widest mb-2 block flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                        Your Tracking Link
+                    </span>
+                    <p class="text-sm text-slate-300">Add this to your Instagram Bio or YouTube description.</p>
+                </div>
+                
+                <div class="flex items-center gap-2 bg-slate-800/80 border border-slate-700 p-2 pl-4 rounded-xl relative z-10">
+                    <span id="ref-link" class="font-mono text-brand-mint truncate w-full text-sm">shopgood.in/?ref=SARAH</span>
+                    <button id="copy-link-btn" class="bg-white text-brand-dark px-4 py-2 rounded-lg font-bold text-sm hover:scale-105 transition-transform flex-shrink-0">Copy</button>
+                </div>
             </div>
-            <div class="flex items-center gap-2 bg-slate-800 p-2 pl-4 rounded-full w-full sm:w-auto overflow-hidden">
-                <span id="ref-link" class="font-mono text-brand-mint truncate text-sm sm:text-base">Loading...</span>
-                <button id="copy-btn" class="bg-brand-mint text-brand-dark px-4 py-2 rounded-full font-bold text-sm hover:scale-105 transition-transform flex-shrink-0">Copy</button>
+
+            <!-- Promo Code -->
+            <div class="bg-gradient-to-br from-brand-mint to-brand-blue text-brand-dark rounded-[2rem] p-8 shadow-soft flex flex-col justify-between">
+                <div class="mb-6">
+                    <span class="text-brand-dark/60 text-xs font-bold uppercase tracking-widest mb-2 block flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                        Audience Promo Code
+                    </span>
+                    <p class="text-sm font-medium text-brand-dark/80">Tell your followers to use this code at checkout for 10% off!</p>
+                </div>
+                
+                <div class="flex items-center justify-between bg-white/60 backdrop-blur-sm border border-white/50 p-2 pl-4 rounded-xl">
+                    <span id="promo-code" class="font-mono font-extrabold text-xl tracking-wider uppercase">SARAH10</span>
+                    <button id="copy-code-btn" class="bg-brand-dark text-white px-4 py-2 rounded-lg font-bold text-sm hover:scale-105 transition-transform flex-shrink-0">Copy</button>
+                </div>
             </div>
         </div>
 
         <!-- Stats Grid -->
+        <h3 class="text-lg font-bold text-brand-dark mb-4 px-2">Your Performance</h3>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
             <!-- Metric 1 -->
-            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-brand-blue/20 rounded-bl-full"></div>
-                <p class="text-slate-500 text-sm font-bold mb-1">Total Sales</p>
-                <h3 id="stat-sales" class="text-4xl font-extrabold text-brand-dark">0</h3>
+            <div class="bg-white p-6 sm:p-8 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden group hover:border-brand-dark transition-colors">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-brand-blue/10 rounded-bl-full transition-transform group-hover:scale-110"></div>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Total Referrals</p>
+                <h3 id="stat-sales" class="text-5xl font-extrabold text-brand-dark">0</h3>
             </div>
+            
             <!-- Metric 2 -->
-            <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm relative overflow-hidden ring-1 ring-emerald-50">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-emerald-100 rounded-bl-full"></div>
-                <p class="text-slate-500 text-sm font-bold mb-1">Unpaid Balance</p>
-                <h3 id="stat-pending" class="text-4xl font-extrabold text-emerald-600">₹0</h3>
-                <p id="next-payout-text" class="text-xs text-slate-400 mt-2 font-medium">Next Payout: Calculating...</p>
+            <div class="bg-white p-6 sm:p-8 rounded-[2rem] border border-emerald-100 shadow-sm relative overflow-hidden ring-1 ring-emerald-50">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full"></div>
+                <p class="text-emerald-600/60 text-xs font-bold uppercase tracking-widest mb-2">Ready for Payout</p>
+                <h3 id="stat-pending" class="text-5xl font-extrabold text-emerald-500">₹0</h3>
+                <p class="text-xs text-slate-400 mt-3 font-medium bg-gray-50 w-fit px-2 py-1 rounded-md border border-gray-100">Transfers on 1st & 15th</p>
             </div>
+            
             <!-- Metric 3 -->
-            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-16 h-16 bg-brand-lavender/20 rounded-bl-full"></div>
-                <p class="text-slate-500 text-sm font-bold mb-1">Total Lifetime Earnings</p>
-                <h3 id="stat-lifetime" class="text-3xl font-extrabold text-brand-dark mt-1">₹0</h3>
+            <div class="bg-white p-6 sm:p-8 rounded-[2rem] border border-gray-100 shadow-sm relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-brand-lavender/20 rounded-bl-full"></div>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2">Lifetime Earnings</p>
+                <h3 id="stat-lifetime" class="text-4xl font-extrabold text-brand-dark mt-1">₹0</h3>
             </div>
         </div>
 
-        <!-- Leaderboard -->
-        <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-            <h3 class="text-xl font-bold text-brand-dark mb-6 flex items-center gap-2">
-                🏆 Top Partners This Month
-            </h3>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="text-slate-400 border-b border-gray-100 text-sm">
-                            <th class="pb-3 font-medium">Rank</th>
-                            <th class="pb-3 font-medium">Partner Name</th>
-                            <th class="pb-3 font-medium text-right">Necklaces Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboard-body" class="text-brand-dark font-medium">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
+        <!-- Creator Toolkit & Leaderboard Grid -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            
+            <!-- Leaderboard -->
+            <div class="lg:col-span-2 bg-white rounded-[2rem] p-6 sm:p-8 border border-gray-100 shadow-sm">
+                <h3 class="text-xl font-bold text-brand-dark mb-6 flex items-center gap-2">
+                    🏆 Creator Leaderboard
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-slate-400 border-b border-gray-100 text-xs uppercase tracking-widest">
+                                <th class="pb-4 font-bold pl-2">Rank</th>
+                                <th class="pb-4 font-bold">Creator</th>
+                                <th class="pb-4 font-bold text-right pr-2">Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body" class="text-brand-dark font-medium">
+                            <!-- Populated by JS -->
+                            <tr><td colspan="3" class="py-8 text-center text-slate-400">Loading rankings...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+
+            <!-- Creator Toolkit -->
+            <div class="bg-white rounded-[2rem] p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col">
+                <h3 class="text-xl font-bold text-brand-dark mb-2 flex items-center gap-2">
+                    📸 Creator Toolkit
+                </h3>
+                <p class="text-sm text-slate-500 mb-6">FEATURE NOT AVAILABLE YET!!!! 
+                    Need content? Download our viral HD videos and product photos to post on your story.</p>
+                
+                <div class="space-y-3 flex-grow">
+                    <a href="#" class="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-brand-dark hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">💍</span>
+                            <div>
+                                <p class="text-sm font-bold text-brand-dark group-hover:text-brand-blue transition-colors">Bar Necklace Assets</p>
+                                <p class="text-xs text-slate-400 font-medium">3 Videos, 5 Photos</p>
+                            </div>
+                        </div>
+                        <svg class="w-5 h-5 text-slate-300 group-hover:text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </a>
+                    
+                    <a href="#" class="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:border-brand-dark hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">📸</span>
+                            <div>
+                                <p class="text-sm font-bold text-brand-dark group-hover:text-brand-blue transition-colors">Photo Dogtag Assets</p>
+                                <p class="text-xs text-slate-400 font-medium">2 Videos, 4 Photos</p>
+                            </div>
+                        </div>
+                        <svg class="w-5 h-5 text-slate-300 group-hover:text-brand-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <script src="partner.js"></script>
+   <!-- Live Backend Logic -->
+    <script defer src="partner.js"></script>
 </body>
 </html>
